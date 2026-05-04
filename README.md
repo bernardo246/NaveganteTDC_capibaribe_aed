@@ -1,57 +1,74 @@
-# 🌊 Surfista do Pina 🏄
+# 🚣 Navegador do Capibaribe 🌊
 
-> **Jogo em C — Praia do Pina, Recife-PE**  
-> Projeto de Estrutura de Dados
+> **Jogo em C — Vibe: Pontes e Rios do Recife**
+> Projeto de Estrutura de Dados — AED 2026.1
 
 ---
 
 ## Sobre o Jogo
 
-**Surfista do Pina** é um jogo **Endless Runner vertical** desenvolvido em **C**, ambientado na famosa Praia do Pina, em Recife-PE. O jogador controla um surfista descendo as ondas, desviando de obstáculos e coletando itens típicos da cultura praiana recifense.
+**Navegador do Capibaribe** é um **Endless Runner aquático** desenvolvido em **C**, inspirado no Rio Capibaribe, nos igarapés e nas pontes históricas que definem a paisagem e a identidade de Recife — a *"Veneza Brasileira"*, com sua rede de rios, canais e mais de 50 pontes.
 
-### Mecânica Principal
+O jogador controla uma jangada/canoa descendo o Rio Capibaribe, desviando de obstáculos típicos dos rios recifenses e coletando itens da cultura local.
 
-| Ação | Descrição |
-|------|-----------|
-| Posição | O surfista fica fixo na base da tela |
-| Obstáculos | Ondas com jet-skis, rochas e bandeiras de interdição descem continuamente |
-| Movimentação | Teclas **A** (esquerda) e **D** (direita) para desviar |
-| Coleta | Itens como 🥥 coco e 🥟 pastel concedem pontos |
-| Progressão | A velocidade aumenta com o tempo |
-| Game Over | Colisão com obstáculo encerra a partida e registra a pontuação |
+### Elementos Culturais
+
+- 🌊 Rio Capibaribe e igarapés como cenário principal
+- 🌉 Pontes icônicas de Recife como marcos de fase *(Ponte Duarte Coelho, Ponte Buarque de Macedo)*
+- 🪵 Obstáculos: troncos, lixo no rio, pilastras de pontes, barcos parados
+- 🐟 Itens coletáveis: tainha, flor de mangue, botijão, remo extra
+- ⚡ Velocidade da correnteza aumenta progressivamente
+- 💀 Colisão encerra a partida e registra pontuação no ranking
+
+---
+
+## Justificativa da Vibe
+
+O Rio Capibaribe é símbolo histórico de Recife — presente na literatura, música e arte pernambucana. A vibe **"Pontes e Rios do Recife"** tem forte identidade cultural e diferencia o projeto das demais propostas com temática de praia, homenageando a relação da cidade com a água de forma lúdica e educativa.
 
 ---
 
 ## Estruturas de Dados
 
-### 2.1 Fila (Lista Encadeada) — Ondas do Jogo
+### 3.1 Fila (Lista Encadeada) — Obstáculos no Rio
 
-A fila representa as ondas chegando na tela. Cada nó contém uma onda com seus obstáculos e itens. É a espinha dorsal da mecânica do jogo — sem ela, não há ondas, não há jogo.
+A fila representa os obstáculos e itens chegando pelo rio. Cada nó contém um trecho do rio com seus elementos. É a espinha dorsal da mecânica — sem ela, o rio não flui.
 
-### 2.2 Árvore Binária de Busca (BST) — Sistema de Itens
+### 3.2 Árvore Binária de Busca (BST) — Catálogo de Itens
 
-A BST gerencia todos os itens coletáveis. Cada item tem um código numérico e é armazenado na árvore pelo seu valor. Ao coletar um item, a BST é consultada para retornar a pontuação correspondente.
+A BST gerencia todos os itens coletáveis. Cada item tem um código e é armazenado pela pontuação. Ao coletar um item, a BST retorna o valor correspondente.
 
 ```
-         [coco = 10]
-        /            \
-   [alga = 5]    [pastel = 20]
-   /                       \
-[lixo = -5]         [prancha = 50]
+          [tainha = 10]
+         /             \
+   [flor = 5]     [botijao = 20]
+   /                          \
+[lixo = -5]           [remo extra = 50]
 ```
 
-### 2.3 Lista Encadeada — Ranking de Recordes
+### 3.3 Lista Encadeada — Ranking de Recordes
 
-Armazena as pontuações dos jogadores. Ao fim de cada partida, a pontuação é inserida e a lista é ordenada com **Merge Sort** para exibir o **Top 5 Surfistas do Pina**.
+Armazena as pontuações dos jogadores. Ao fim de cada partida, a pontuação é inserida e ordenada com **Merge Sort** para exibir o **Top 5 Navegadores do Capibaribe**.
 
 ---
 
-## Algoritmo de Ordenação
+## Obstáculos
 
-**Merge Sort / Insertion Sort** aplicado na lista de recordes.
+| Obstáculo | Descrição |
+|-----------|-----------|
+| 🪵 Tronco | Detritos naturais arrastados pela correnteza |
+| 🗑️ Lixo no rio | Resíduos urbanos que poluem o Capibaribe |
+| 🏛️ Pilastra de ponte | Estruturas das pontes históricas no caminho |
+| ⛵ Barco parado | Embarcações ancoradas bloqueando a rota |
 
-1. Ao fim de cada partida, a pontuação é inserida na lista de recordes
-2. O algoritmo reordena a lista do **maior para o menor**
+---
+
+## Algoritmo de Ordenação — Merge Sort
+
+Aplicado na lista de recordes ao fim de cada partida.
+
+1. A pontuação é inserida na lista de recordes
+2. O Merge Sort reordena do **maior para o menor**
 3. O menu exibe o **Top 5** com nome do jogador e pontuação
 
 ---
@@ -59,12 +76,12 @@ Armazena as pontuações dos jogadores. Ao fim de cada partida, a pontuação é
 ## Menu do Jogo
 
 ```
-==============================
-      🌊 SURFISTA DO PINA 🌊
-==============================
+================================
+   🚣 NAVEGADOR DO CAPIBARIBE 🌊
+================================
   1. Jogar
-  2. Ver Recordes
-  3. Como Jogar
+  2. Ver Recordes (Top 5)
+  3. Como Jogar / Itens
   4. Sair
 ```
 
@@ -74,10 +91,26 @@ Armazena as pontuações dos jogadores. Ao fim de cada partida, a pontuação é
 
 | Estrutura | Aplicação |
 |-----------|-----------|
-| Fila (Lista Encadeada) | Geração e controle das ondas na tela |
-| Árvore Binária de Busca (BST) | Gerenciamento e pontuação dos itens coletáveis |
+| Fila (Lista Encadeada) | Geração e controle dos obstáculos no rio |
+| Árvore Binária de Busca (BST) | Catálogo e pontuação dos itens coletáveis |
 | Lista Encadeada + Merge Sort | Ranking dos recordes (Top 5) |
 
 ---
 
-*🌊 Surfista do Pina — Projeto de Estrutura de Dados | Recife, PE*
+## Organização do Repositório
+
+```
+navegador-capibaribe/
+├── src/
+│   ├── fila.c / fila.h       → Pessoa 1
+│   ├── arvore.c / arvore.h   → Pessoa 2
+│   ├── ranking.c / ranking.h → Pessoa 3
+│   └── main.c / menu.c       → Pessoa 4
+├── include/
+├── docs/
+└── README.md
+```
+
+---
+
+*🌊 Navegador do Capibaribe — Vibe: Pontes e Rios do Recife | AED 2026.1*
