@@ -1,0 +1,23 @@
+/* arvore.h - BST de itens coletaveis (Dev 2) */
+
+#ifndef ARVORE_H
+#define ARVORE_H
+
+typedef struct NoBST {
+    int         chave;
+    void       *dado;
+    struct NoBST *esq;
+    struct NoBST *dir;
+} NoBST;
+
+typedef struct {
+    NoBST *raiz;
+} Arvore;
+
+Arvore *arvore_criar(void);
+void    arvore_destruir(Arvore *a);
+int     arvore_inserir(Arvore *a, int chave, void *dado);
+void   *arvore_buscar(const Arvore *a, int chave);
+int     arvore_remover(Arvore *a, int chave);
+
+#endif /* ARVORE_H */

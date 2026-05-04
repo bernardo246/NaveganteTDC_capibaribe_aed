@@ -101,14 +101,35 @@ Aplicado na lista de recordes ao fim de cada partida.
 
 ```
 navegador-capibaribe/
-├── src/
-│   ├── fila.c / fila.h       → Pessoa 1
-│   ├── arvore.c / arvore.h   → Pessoa 2
-│   ├── ranking.c / ranking.h → Pessoa 3
-│   └── main.c / menu.c       → Pessoa 4
-├── include/
-├── docs/
+├── src/               ← lógica do jogo
+│   ├── main.c         ← integração geral (Dev 5)
+│   ├── menu.c / .h    ← menu + loop do jogo (Dev 4)
+│   └── jogo.c / .h    ← lógica principal (Dev 4)
+├── lib/               ← estruturas genéricas reutilizáveis
+│   ├── fila.c / .h    ← fila de trechos do rio (Dev 1)
+│   ├── arvore.c / .h  ← BST de itens coletáveis (Dev 2)
+│   └── ranking.c / .h ← recordes + merge sort (Dev 3)
+├── assets/            ← recursos do jogo
+│   ├── sprites/       ← imagens e animações
+│   ├── sounds/        ← efeitos sonoros e música
+│   └── maps/          ← mapas e fases do rio
+├── include/           ← tipos e headers compartilhados
+│   └── tipos.h
+├── docs/              ← documentação do projeto
+├── Makefile           ← compilação automática (Dev 5)
 └── README.md
+```
+
+### Como compilar
+
+```bash
+make
+```
+
+### Como executar
+
+```bash
+./navegador-capibaribe
 ```
 
 ---
