@@ -101,21 +101,35 @@ Aplicado na lista de recordes ao fim de cada partida.
 
 ```
 navegador-capibaribe/
-├── src/
-│   ├── fila.c       ← fila de trechos do rio (Dev 1)
-│   ├── fila.h
-│   ├── arvore.c     ← BST de itens coletáveis (Dev 2)
-│   ├── arvore.h
-│   ├── ranking.c    ← recordes + merge sort (Dev 3)
-│   ├── ranking.h
-│   ├── menu.c       ← menu + loop do jogo (Dev 4)
-│   ├── menu.h
-│   ├── jogo.c       ← lógica principal (Dev 4)
-│   └── main.c       ← integração geral (Dev 5)
-├── include/         ← headers compartilhados
-├── docs/            ← documentação do projeto
-├── Makefile         ← compilação automática (Dev 5)
-└── README.md        ← descrição do projeto (Dev 5)
+├── src/               ← lógica do jogo
+│   ├── main.c         ← integração geral (Dev 5)
+│   ├── menu.c / .h    ← menu + loop do jogo (Dev 4)
+│   └── jogo.c / .h    ← lógica principal (Dev 4)
+├── lib/               ← estruturas genéricas reutilizáveis
+│   ├── fila.c / .h    ← fila de trechos do rio (Dev 1)
+│   ├── arvore.c / .h  ← BST de itens coletáveis (Dev 2)
+│   └── ranking.c / .h ← recordes + merge sort (Dev 3)
+├── assets/            ← recursos do jogo
+│   ├── sprites/       ← imagens e animações
+│   ├── sounds/        ← efeitos sonoros e música
+│   └── maps/          ← mapas e fases do rio
+├── include/           ← tipos e headers compartilhados
+│   └── tipos.h
+├── docs/              ← documentação do projeto
+├── Makefile           ← compilação automática (Dev 5)
+└── README.md
+```
+
+### Como compilar
+
+```bash
+make
+```
+
+### Como executar
+
+```bash
+./navegador-capibaribe
 ```
 
 ---
