@@ -102,15 +102,68 @@ Aplicado na lista de recordes ao fim de cada partida.
 ```
 navegador-capibaribe/
 ├── src/
-│   ├── fila.c / fila.h       → Pessoa 1
-│   ├── arvore.c / arvore.h   → Pessoa 2
-│   ├── ranking.c / ranking.h → Pessoa 3
-│   └── main.c / menu.c       → Pessoa 4
-├── include/
-├── docs/
-└── README.md
+│   ├── fila.c       ← fila de trechos do rio (Dev 1)
+│   ├── fila.h
+│   ├── arvore.c     ← BST de itens coletáveis (Dev 2)
+│   ├── arvore.h
+│   ├── ranking.c    ← recordes + merge sort (Dev 3)
+│   ├── ranking.h
+│   ├── menu.c       ← menu + loop do jogo (Dev 4)
+│   ├── menu.h
+│   ├── jogo.c       ← lógica principal (Dev 4)
+│   └── main.c       ← integração geral (Dev 5)
+├── include/         ← headers compartilhados
+├── docs/            ← documentação do projeto
+├── Makefile         ← compilação automática (Dev 5)
+└── README.md        ← descrição do projeto (Dev 5)
 ```
 
 ---
 
-*🌊 Navegador do Capibaribe — Vibe: Pontes e Rios do Recife | AED 2026.1*
+## Divisão do Time
+
+| Dev | Papel | Branch | Responsabilidade | Arquivos |
+|-----|-------|--------|-----------------|----------|
+| Dev 1 | Motor do Jogo | `feature/fila-rio` | Fila de Obstáculos (Lista Encadeada) | `fila.c` `fila.h` |
+| Dev 2 | Itens & Pontuação | `feature/arvore-itens` | Árvore Binária de Busca (BST) | `arvore.c` `arvore.h` |
+| Dev 3 | Ranking & Ordenação | `feature/ranking` | Lista de Recordes + Merge Sort | `ranking.c` `ranking.h` |
+| Dev 4 | Interface & Menu | `feature/menu` | Menu Interativo + Loop do Jogo | `menu.c` `menu.h` `jogo.c` |
+| Dev 5 | Integração & Líder Técnico | `feature/integracao` | main.c + integração de módulos + gerência da branch dev | `main.c` `README.md` `Makefile` |
+
+---
+
+## Estrutura de Branches
+
+```
+● main        ← versão final entregável (ninguém commita direto aqui)
+└─ ● dev      ← integração geral (Dev 5 gerencia)
+   ├─ feature/fila-rio       ← Dev 1
+   ├─ feature/arvore-itens   ← Dev 2
+   ├─ feature/ranking        ← Dev 3
+   ├─ feature/menu           ← Dev 4
+   └─ feature/integracao     ← Dev 5
+```
+
+## Fluxo de Trabalho
+
+```
+sua branch → commit → push → pull request → Dev 5 revisa → main
+trabalha      git add   sobe    pede pra      aceita o       só no fim,
+aqui          . /commit  pro     entrar na     merge na dev   tudo pronto
+                         GitHub  dev
+```
+
+---
+
+## Regras do Time
+
+- 🚫 Nunca commitar direto na `main` ou na `dev`
+- ✅ Sempre trabalhar na sua própria branch
+- 📝 Mensagem de commit descritiva: `"adiciona função enfileirarTrecho()"`
+- 🔄 Antes de começar: `git pull origin dev` — pra pegar o que os outros fizeram
+- 👑 Dev 5 é o responsável por revisar PRs e fazer merge na `dev`
+- 🏁 Merge na `main` só quando o jogo estiver 100% funcionando
+
+---
+
+*🚣 Navegador do Capibaribe — AED 2026.1 — Recife, PE*
