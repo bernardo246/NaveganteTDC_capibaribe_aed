@@ -1,4 +1,4 @@
-# 🚣 Navegador do Capibaribe 🌊
+# 🚣 Surfista TDC do pina 🌊
 
 > **Jogo em C — Vibe: Pontes e Rios do Recife**
 > Projeto de Estrutura de Dados — AED 2026.1
