@@ -1,5 +1,6 @@
 /* menu.c - Menu e loop principal do jogo (Dev 4) */
 
+#include <raylib.h> // TODO: interface grafica - raylib
 #include <stdio.h>
 #include "menu.h"
 #include "jogo.h"

@@ -1,5 +1,6 @@
 /* jogo.c - Logica principal do jogo Navegador Capibaribe (Dev 4) */
 
+#include <raylib.h> // TODO: interface grafica - raylib
 #include <stdio.h>
 #include "jogo.h"
 #include "../lib/fila.h"
