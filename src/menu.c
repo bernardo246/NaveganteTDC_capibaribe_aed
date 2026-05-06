@@ -7,7 +7,7 @@
 
 void menu_iniciar(void) {
     int opcao;
-    do {
+    
         menu_exibir();
         opcao = menu_ler_opcao();
         switch (opcao) {
@@ -16,7 +16,7 @@ void menu_iniciar(void) {
             case 0: printf("Saindo...\n"); break;
             default: printf("Opcao invalida.\n");
         }
-    } while (opcao != 0);
+    
 }
 
 void menu_exibir(void) {

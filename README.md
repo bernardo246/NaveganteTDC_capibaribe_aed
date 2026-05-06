@@ -122,6 +122,12 @@ navegador-capibaribe/
 
 ### Como compilar
 
+No macOS, instale a raylib antes de compilar:
+
+```bash
+brew install raylib
+```
+
 ```bash
 make
 ```
