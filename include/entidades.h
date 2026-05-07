@@ -1,6 +1,6 @@
 // objetos do jogo, exemplo: personagem, inimigos, itens, etc.
-#ifndef entidades_H
-#define entidades_H
+#ifndef ENTIDADES_H
+#define ENTIDADES_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +9,11 @@
 
 #include "tipos.h"
 #include "default_structs.h"
-#include "arvore.h"
+
+typedef struct Arvore Arvore;
+typedef struct Linkedlist_obstaculo Linkedlist_obstaculo;
+typedef struct Linkedlist_item Linkedlist_item;
+typedef struct Item Item;
 
 // estruturas do obstaculo;
 typedef struct {
@@ -26,10 +30,10 @@ typedef struct {
 
 } obstaculo;
 
-typedef struct {
+struct Linkedlist_obstaculo {
     obstaculo* next;
     obstaculo* prev;
-} Linkedlist_obstaculo;
+};
 
 // fim da estrutura do obstaculo
 
@@ -52,7 +56,7 @@ typedef struct jogador {
 
 
 
-typedef struct {
+struct Item {
 
     int     id;
     char    tipo[16];  /* ex: "moeda", "power-up", "obstaculo" */
@@ -66,16 +70,16 @@ typedef struct {
     Linkedlist_item* all_itens;
     Linkedlist_item* itens_ativos;
 
-} Item;
+};
 
-typedef struct {
-    obstaculo* next;
-    obstaculo* prev;
-} Linkedlist_item;
-
-
+struct Linkedlist_item {
+    Item* next;
+    Item* prev;
+};
 
 
 
 
-#endif entidades_H
+
+
+#endif /* ENTIDADES_H */

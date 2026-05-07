@@ -12,7 +12,7 @@ typedef struct NoBST {
     struct NoBST *dir;
 } NoBST;
 
-typedef struct {
+typedef struct Arvore {
     NoBST *raiz;
 } Arvore;
 
