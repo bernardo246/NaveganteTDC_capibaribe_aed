@@ -3,6 +3,8 @@
 #ifndef ARVORE_H
 #define ARVORE_H
 
+#include "entidades.h" 
+
 typedef struct NoBST {
     int         chave;
     void       *dado;

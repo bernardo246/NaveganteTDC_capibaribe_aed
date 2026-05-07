@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include "arvore.h"
-#include "tipos.h"
+#include "entidades.h"
 
 Arvore *arvore_criar(void) {
     Arvore *a = (Arvore *)malloc(sizeof(Arvore));
