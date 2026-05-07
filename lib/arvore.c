@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include "arvore.h"
+#include "tipos.h"
 
 Arvore *arvore_criar(void) {
     Arvore *a = (Arvore *)malloc(sizeof(Arvore));
@@ -82,4 +83,18 @@ int arvore_remover(Arvore *a, int chave) {
     if (!arvore_buscar(a, chave)) return 0;
     a->raiz = remover_no(a->raiz, chave);
     return 1;
+}
+
+int item_cadastrar(Arvore *a, Item *item) {
+    return arvore_inserir(a, item->id, item);
+}
+
+int item_coletar(Arvore *a, int id) {
+    Item *item = (Item *)arvore_buscar(a, id);
+    if (!item){ 
+        return 0; 
+    }         
+    int valor = item->valor;
+    arvore_remover(a, id);
+    return valor;                 
 }
