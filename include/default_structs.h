@@ -2,8 +2,8 @@
 #define DEFAULT_STRUCTS_H
 
 typedef struct {
-    float x;
-    float y;
+    int x;
+    int y;
 } Posicao;
 
 typedef struct {
@@ -13,8 +13,8 @@ typedef struct {
 } Animacao;
 
 typedef struct hitbox {
-    float largura;
-    float altura;
+    int largura;
+    int altura;
 } Hitbox;
 
 #endif /* DEFAULT_STRUCTS_H */

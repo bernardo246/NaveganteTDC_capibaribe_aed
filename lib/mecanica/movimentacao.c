@@ -11,3 +11,7 @@ void mov_jogador(jogador *jogador){
     if (jogador->pos.x > 1280) jogador->pos.x = 1280;
     if (jogador->pos.x < 0) jogador->pos.x = 0;
 }
+
+void mov_obstacle(obstaculo *obstaculo){
+    obstaculo->pos.x--;
+}

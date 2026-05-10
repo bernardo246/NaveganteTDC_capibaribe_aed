@@ -12,6 +12,7 @@
 #include "../lib/mecanica/movimentacao.h"
 
 static jogador jogador_principal;
+static Fila *obstaculos_ativos;
 
 void jogo_iniciar(void) {
     jogador_principal = (jogador){.nome = "Navegante",
@@ -20,21 +21,22 @@ void jogo_iniciar(void) {
         .velocidade = 5,
         .inventario = NULL,
         .hitbox = {
-            .largura = 32.0f,
-            .altura = 32.0f
+            .largura = 32,
+            .altura = 32
         },
         .animacao_andar = {
             .num_frames = 0,
             .frame_atual = 0
         },
         .pos = {
-            .x = 640.0f,
-            .y = 360.0f
+            .x = 640,
+            .y = 360
         }
     };
 
     printf("Iniciando jogo...\n");
     /* TODO: inicializar fila de trechos, arvore de itens, estado do jogador */
+    obstaculos_ativos = fila_criar();
     InitWindow(1280,720,"navegante_tdc");
     SetTargetFPS(60); 
     jogo_atualizar();
@@ -48,7 +50,7 @@ void jogo_atualizar(void) {
             BeginDrawing();
             ClearBackground(RAYWHITE);
             DrawText("Navegante Capibaribe", 40, 40, 30, DARKBLUE);
-            DrawCircle((int)jogador_principal.pos.x, (int)jogador_principal.pos.y, 20.0f, RED);
+            DrawCircle(jogador_principal.pos.x, jogador_principal.pos.y, 20.0f, RED);
             EndDrawing();
 
             //fechar janela, por enquanto que n faz algo para retornar ao menu
@@ -57,6 +59,19 @@ void jogo_atualizar(void) {
 }
 
 void jogo_encerrar(void) {
-    /* TODO: liberar recursos e salvar recorde */
+    if (jogador_principal.inventario != NULL) {
+        arvore_destruir(jogador_principal.inventario);
+        jogador_principal.inventario = NULL;
+    }
+
+    if (obstaculos_ativos != NULL) {
+        while (!fila_vazia(obstaculos_ativos)) {
+            obstaculo *obstaculo_atual = (obstaculo *)fila_desenfileirar(obstaculos_ativos);
+            free(obstaculo_atual);
+        }
+        fila_destruir(obstaculos_ativos);
+        obstaculos_ativos = NULL;
+    }
+
     CloseWindow();
 }
