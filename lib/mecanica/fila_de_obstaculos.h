@@ -11,6 +11,7 @@
 #define OBSTACULO_POS_MAX 720
 
 void init_obstacle(obstaculo *obstaculo, const char *nome);
+void set_obstacle_profile(obstaculo *obstaculo, const char *nome);
 void atualizar_obstaculos(Fila *obstaculos_ativos);
 
 #endif
