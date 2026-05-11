@@ -1,6 +1,8 @@
 #include "fila_de_obstaculos.h"
 #include "movimentacao.h"
 
+static double tempo_inicio_invencivel = -1.0;
+
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome) {
     if (strcmp(nome, "Tronco") == 0) {
         strcpy(obstaculo->nome, TRONCO_PADRAO.nome);
@@ -54,6 +56,19 @@ void init_obstacle(obstaculo *obstaculo, const char *nome){
     obstaculo->obstaculos_ativos = NULL;
 }
 
+void tempo_invencivel(jogador *jogador_atual) {
+    if (jogador_atual == NULL || !jogador_atual->invencivel) return;
+
+    if (tempo_inicio_invencivel < 0.0) {
+        tempo_inicio_invencivel = GetTime();
+    }
+
+    if ((GetTime() - tempo_inicio_invencivel) >= 3.0) {
+        jogador_atual->invencivel = 0;
+        tempo_inicio_invencivel = -1.0;
+    }
+}
+
 void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual) {
     if (obstaculos_ativos == NULL) return;
 
@@ -84,6 +99,8 @@ void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual) {
 
 
 int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
+    tempo_invencivel(jogador);
+
     Rectangle rJogador = {
      jogador->pos.x - jogador->hitbox.largura/2.0f,
      jogador->pos.y - jogador->hitbox.altura/2.0f,
@@ -97,8 +114,10 @@ int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
      obstaculo->hitbox.altura
  };
  
- if(CheckCollisionRecs(rJogador, rObstaculo)){
+ if(CheckCollisionRecs(rJogador, rObstaculo) && !jogador->invencivel){
     jogador->vida -=40;
+    jogador->invencivel=1;
+    tempo_inicio_invencivel = GetTime();
     return 1;
  }
  return 0;

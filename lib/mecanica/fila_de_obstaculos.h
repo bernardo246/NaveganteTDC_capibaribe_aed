@@ -6,12 +6,14 @@
 #include "fila.h"
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define OBSTACULO_POS_MIN 0
 #define OBSTACULO_POS_MAX 720
 
 void init_obstacle(obstaculo *obstaculo, const char *nome);
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome);
+void tempo_invencivel(jogador *jogador_atual);
 void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual);
 int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo);
 

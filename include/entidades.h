@@ -100,7 +100,7 @@ typedef struct jogador {
     int vida;
     int pontuacao;
     int velocidade;
-
+    int invencivel;
     Arvore *inventario; // Arvore de itens coletados
 
 
