@@ -13,5 +13,6 @@
 void init_obstacle(obstaculo *obstaculo, const char *nome);
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome);
 void atualizar_obstaculos(Fila *obstaculos_ativos);
+void colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo);
 
 #endif

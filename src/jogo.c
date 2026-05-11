@@ -46,6 +46,7 @@ void jogo_iniciar(void) {
 void jogo_atualizar(void) {
     /* TODO: logica de cada frame/turno */
     while(!WindowShouldClose()){
+            if(jogador_principal->vida<=0)break;
             mov_jogador(&jogador_principal);
             BeginDrawing();
             ClearBackground(RAYWHITE);

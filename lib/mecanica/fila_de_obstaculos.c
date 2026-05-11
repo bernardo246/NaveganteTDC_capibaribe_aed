@@ -69,3 +69,24 @@ void atualizar_obstaculos(Fila *obstaculos_ativos) {
         fila_enfileirar(obstaculos_ativos, obstaculo_atual);
     }
 }
+
+
+void colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
+    Rectangle rJogador = {
+     jogador.pos.x - jogador.hitbox.largura/2.0f,
+     jogador.pos.y - jogador.hitbox.altura/2.0f,
+     jogador.hitbox.largura,
+     jogador.hitbox.altura
+    };
+    Rectangle rObstaculo = {
+     obstaculo.pos.x - obstaculo.hitbox.largura/2.0f,
+     obstaculo.pos.y - obstaculo.hitbox.altura/2.0f,
+     obstaculo.hitbox.largura,
+     obstaculo.hitbox.altura
+ };
+ 
+ if(CheckCollisionRecs(rJogador, rObstaculo)){
+    jogador->vida -=40;
+ }
+
+}
