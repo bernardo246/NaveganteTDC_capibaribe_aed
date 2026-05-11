@@ -54,39 +54,52 @@ void init_obstacle(obstaculo *obstaculo, const char *nome){
     obstaculo->obstaculos_ativos = NULL;
 }
 
-void atualizar_obstaculos(Fila *obstaculos_ativos) {
-    int quantidade_obstaculos = fila_tamanho(obstaculos_ativos);
+void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual) {
+    if (obstaculos_ativos == NULL) return;
 
-    for (int i = 0; i < quantidade_obstaculos; i++) {
-        obstaculo *obstaculo_atual = (obstaculo *)fila_desenfileirar(obstaculos_ativos);
+    No *no_atual = obstaculos_ativos->inicio;
+    while (no_atual != NULL) {
+        No *proximo = no_atual->proximo;
+        obstaculo *obstaculo_atual = (obstaculo *)no_atual->dado;
+        int remover_obstaculo = 0;
+
         mov_obstacle(obstaculo_atual);
 
         if (obstaculo_atual->pos.x <= 0) {
-            free(obstaculo_atual);
-            continue;
+            remover_obstaculo = 1;
         }
 
-        fila_enfileirar(obstaculos_ativos, obstaculo_atual);
+        if (jogador_atual != NULL && colisao_jogador_X_obstaculo(jogador_atual, obstaculo_atual)) {
+            remover_obstaculo = 1;
+        }
+
+        if (remover_obstaculo && fila_mover_no_para_inicio(obstaculos_ativos, obstaculo_atual)) {
+            obstaculo *obstaculo_removido = (obstaculo *)fila_desenfileirar(obstaculos_ativos);
+            free(obstaculo_removido);
+        }
+
+        no_atual = proximo;
     }
 }
 
 
-void colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
+int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
     Rectangle rJogador = {
-     jogador.pos.x - jogador.hitbox.largura/2.0f,
-     jogador.pos.y - jogador.hitbox.altura/2.0f,
-     jogador.hitbox.largura,
-     jogador.hitbox.altura
+     jogador->pos.x - jogador->hitbox.largura/2.0f,
+     jogador->pos.y - jogador->hitbox.altura/2.0f,
+     jogador->hitbox.largura,
+     jogador->hitbox.altura
     };
     Rectangle rObstaculo = {
-     obstaculo.pos.x - obstaculo.hitbox.largura/2.0f,
-     obstaculo.pos.y - obstaculo.hitbox.altura/2.0f,
-     obstaculo.hitbox.largura,
-     obstaculo.hitbox.altura
+     obstaculo->pos.x - obstaculo->hitbox.largura/2.0f,
+     obstaculo->pos.y - obstaculo->hitbox.altura/2.0f,
+     obstaculo->hitbox.largura,
+     obstaculo->hitbox.altura
  };
  
  if(CheckCollisionRecs(rJogador, rObstaculo)){
     jogador->vida -=40;
+    return 1;
  }
-
+ return 0;
 }
