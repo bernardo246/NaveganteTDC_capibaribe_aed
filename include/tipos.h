@@ -1,4 +1,4 @@
-# tipos.h - Tipos compartilhados entre modulos
+/* tipos.h - Tipos compartilhados entre modulos */
 #ifndef TIPOS_H
 #define TIPOS_H
 

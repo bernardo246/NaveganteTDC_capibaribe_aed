@@ -43,6 +43,30 @@ void *fila_desenfileirar(Fila *f) {
     return dado;
 }
 
+int fila_mover_no_para_inicio(Fila *f, void *dado) {
+    if (!f || !f->inicio) return 0;
+    if (f->inicio->dado == dado) return 1;
+
+    No *anterior = f->inicio;
+    No *atual = f->inicio->proximo;
+
+    while (atual) {
+        if (atual->dado == dado) {
+            anterior->proximo = atual->proximo;
+            if (f->fim == atual) {
+                f->fim = anterior;
+            }
+            atual->proximo = f->inicio;
+            f->inicio = atual;
+            return 1;
+        }
+        anterior = atual;
+        atual = atual->proximo;
+    }
+
+    return 0;
+}
+
 int fila_vazia(const Fila *f) {
     return f->tamanho == 0;
 }

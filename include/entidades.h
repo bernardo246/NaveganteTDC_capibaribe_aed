@@ -1,6 +1,6 @@
 // objetos do jogo, exemplo: personagem, inimigos, itens, etc.
-#ifndef entidades_H
-#define entidades_H
+#ifndef ENTIDADES_H
+#define ENTIDADES_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,12 +9,17 @@
 
 #include "tipos.h"
 #include "default_structs.h"
-#include "arvore.h"
+
+typedef struct Linkedlist_obstaculo Linkedlist_obstaculo;
+typedef struct Linkedlist_item Linkedlist_item;
+typedef struct Item Item;
 
 // estruturas do obstaculo;
 typedef struct {
 
     char nome[32];
+    char descricao[128];
+    int velocidade;
     Posicao pos;
 
     Hitbox hitbox;
@@ -27,9 +32,73 @@ typedef struct {
 } obstaculo;
 
 typedef struct {
+    char nome[32];
+    char descricao[128];
+    int velocidade;
+    Hitbox hitbox;
+    Animacao animacao_andar;
+} Tronco;
+
+typedef struct {
+    char nome[32];
+    char descricao[128];
+    int velocidade;
+    Hitbox hitbox;
+    Animacao animacao_andar;
+} LixoNoRio;
+
+typedef struct {
+    char nome[32];
+    char descricao[128];
+    int velocidade;
+    Hitbox hitbox;
+    Animacao animacao_andar;
+} PilastraDePonte;
+
+typedef struct {
+    char nome[32];
+    char descricao[128];
+    int velocidade;
+    Hitbox hitbox;
+    Animacao animacao_andar;
+} BarcoParado;
+
+static const Tronco TRONCO_PADRAO = {
+    .nome = "Tronco",
+    .descricao = "Detritos naturais arrastados pela correnteza",
+    .velocidade = 1,
+    .hitbox = {.largura = 96, .altura = 28},
+    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
+};
+
+static const LixoNoRio LIXO_NO_RIO_PADRAO = {
+    .nome = "Lixo no rio",
+    .descricao = "Residuos urbanos que poluem o Capibaribe",
+    .velocidade = 1,
+    .hitbox = {.largura = 48, .altura = 48},
+    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
+};
+
+static const PilastraDePonte PILASTRA_DE_PONTE_PADRAO = {
+    .nome = "Pilastra de ponte",
+    .descricao = "Estruturas das pontes historicas no caminho",
+    .velocidade = 1,
+    .hitbox = {.largura = 80, .altura = 180},
+    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
+};
+
+static const BarcoParado BARCO_PARADO_PADRAO = {
+    .nome = "Barco parado",
+    .descricao = "Embarcacoes ancoradas bloqueando a rota",
+    .velocidade = 1,
+    .hitbox = {.largura = 160, .altura = 70},
+    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
+};
+
+struct Linkedlist_obstaculo {
     obstaculo* next;
     obstaculo* prev;
-} Linkedlist_obstaculo;
+};
 
 // fim da estrutura do obstaculo
 
@@ -39,8 +108,8 @@ typedef struct jogador {
     int vida;
     int pontuacao;
     int velocidade;
-
-    Arvore *inventario; // Arvore de itens coletados
+    int invencivel;
+    Linkedlist_item *inventario;
 
 
     Hitbox hitbox;
@@ -52,7 +121,7 @@ typedef struct jogador {
 
 
 
-typedef struct {
+struct Item {
 
     int     id;
     char    tipo[16];  /* ex: "moeda", "power-up", "obstaculo" */
@@ -66,16 +135,16 @@ typedef struct {
     Linkedlist_item* all_itens;
     Linkedlist_item* itens_ativos;
 
-} Item;
+};
 
-typedef struct {
-    obstaculo* next;
-    obstaculo* prev;
-} Linkedlist_item;
-
-
+struct Linkedlist_item {
+    Item* next;
+    Item* prev;
+};
 
 
 
 
-#endif entidades_H
+
+
+#endif /* ENTIDADES_H */
