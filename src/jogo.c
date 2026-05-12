@@ -7,7 +7,7 @@
 #include "../include/tipos.h"
 #include "jogo.h"
 #include "../lib/fila.h"
-#include "../lib/arvore.h"
+#include "../lib/lista.h"
 #include "../lib/ranking.h"
 #include "../lib/mecanica/movimentacao.h"
 #include "../lib/mecanica/fila_de_obstaculos.h"

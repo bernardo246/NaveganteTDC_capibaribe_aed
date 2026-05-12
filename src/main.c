@@ -2,7 +2,7 @@
 
 #include <raylib.h> // TODO: interface grafica - raylib
 #include "../lib/fila.h"
-#include "../lib/arvore.h"
+#include "../lib/lista.h"
 #include "../lib/ranking.h"
 #include "menu.h"
 #include "jogo.h"

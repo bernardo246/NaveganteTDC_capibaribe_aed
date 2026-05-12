@@ -10,7 +10,6 @@
 #include "tipos.h"
 #include "default_structs.h"
 
-typedef struct Arvore Arvore;
 typedef struct Linkedlist_obstaculo Linkedlist_obstaculo;
 typedef struct Linkedlist_item Linkedlist_item;
 typedef struct Item Item;
@@ -110,7 +109,7 @@ typedef struct jogador {
     int pontuacao;
     int velocidade;
     int invencivel;
-    Arvore *inventario; // Arvore de itens coletados
+    Linkedlist_item *inventario;
 
 
     Hitbox hitbox;
