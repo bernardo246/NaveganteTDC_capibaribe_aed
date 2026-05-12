@@ -10,15 +10,48 @@
 #include "../lib/arvore.h"
 #include "../lib/ranking.h"
 #include "../lib/mecanica/movimentacao.h"
+#include "../lib/mecanica/fila_de_obstaculos.h"
 
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
+
+static void inicializar_obstaculos_teste(void) {
+    const char *nomes[4] = {"Tronco", "Lixo no rio", "Pilastra de ponte", "Barco parado"};
+    Posicao posicoes[4] = {
+        {.x = 240, .y = 180},
+        {.x = 520, .y = 320},
+        {.x = 820, .y = 220},
+        {.x = 1080, .y = 420}
+    };
+
+    for (int i = 0; i < 4; i++) {
+        obstaculo *novo_obstaculo = (obstaculo *)malloc(sizeof(obstaculo));
+        if (novo_obstaculo == NULL) {
+            continue;
+        }
+
+        init_obstacle(novo_obstaculo, nomes[i]);
+        novo_obstaculo->pos = posicoes[i];
+        if (!fila_enfileirar(obstaculos_ativos, novo_obstaculo)) {
+            free(novo_obstaculo);
+        }
+    }
+}
+
+static Color cor_obstaculo(const obstaculo *obstaculo_atual) {
+    if (strcmp(obstaculo_atual->nome, "Tronco") == 0) return BROWN;
+    if (strcmp(obstaculo_atual->nome, "Lixo no rio") == 0) return DARKGREEN;
+    if (strcmp(obstaculo_atual->nome, "Pilastra de ponte") == 0) return GRAY;
+    if (strcmp(obstaculo_atual->nome, "Barco parado") == 0) return BLUE;
+    return DARKGRAY;
+}
 
 void jogo_iniciar(void) {
     jogador_principal = (jogador){.nome = "Navegante",
         .vida = 100,
         .pontuacao = 0,
         .velocidade = 5,
+        .invencivel=0,
         .inventario = NULL,
         .hitbox = {
             .largura = 32,
@@ -37,6 +70,8 @@ void jogo_iniciar(void) {
     printf("Iniciando jogo...\n");
     /* TODO: inicializar fila de trechos, arvore de itens, estado do jogador */
     obstaculos_ativos = fila_criar();
+    iniciar_cronometro_jogo();
+    inicializar_obstaculos_teste();
     InitWindow(1280,720,"navegante_tdc");
     SetTargetFPS(60); 
     jogo_atualizar();
@@ -45,13 +80,50 @@ void jogo_iniciar(void) {
 
 void jogo_atualizar(void) {
     /* TODO: logica de cada frame/turno */
+    const int vida_maxima = 100;
+    const int barra_x = 40;
+    const int barra_y = 85;
+    const int barra_largura = 300;
+    const int barra_altura = 24;
+
     while(!WindowShouldClose()){
-            if(jogador_principal->vida<=0)break;
+            if(jogador_principal.vida<=0)break;
             mov_jogador(&jogador_principal);
+            atualizar_obstaculos(obstaculos_ativos, &jogador_principal);
+            if (jogador_principal.vida < 0) {
+                jogador_principal.vida = 0;
+            }
+
             BeginDrawing();
             ClearBackground(RAYWHITE);
             DrawText("Navegante Capibaribe", 40, 40, 30, DARKBLUE);
+            DrawText("Vida", barra_x, barra_y - 26, 20, BLACK);
+            DrawRectangleLines(barra_x, barra_y, barra_largura, barra_altura, BLACK);
+
+            int largura_vida = (jogador_principal.vida * barra_largura) / vida_maxima;
+            Color cor_vida = (jogador_principal.vida > 50) ? GREEN :
+                             (jogador_principal.vida > 20) ? ORANGE : RED;
+            DrawRectangle(barra_x, barra_y, largura_vida, barra_altura, cor_vida);
+            DrawText(TextFormat("Tempo: %.1fs", tempo_desde_inicio_jogo()), 40, 125, 20, DARKGRAY);
+
             DrawCircle(jogador_principal.pos.x, jogador_principal.pos.y, 20.0f, RED);
+
+            No *no_atual = obstaculos_ativos->inicio;
+            while (no_atual != NULL) {
+                obstaculo *obstaculo_atual = (obstaculo *)no_atual->dado;
+                Rectangle hitbox_visual = {
+                    obstaculo_atual->pos.x - obstaculo_atual->hitbox.largura / 2.0f,
+                    obstaculo_atual->pos.y - obstaculo_atual->hitbox.altura / 2.0f,
+                    obstaculo_atual->hitbox.largura,
+                    obstaculo_atual->hitbox.altura
+                };
+
+                DrawRectangleRec(hitbox_visual, Fade(cor_obstaculo(obstaculo_atual), 0.5f));
+                DrawRectangleLinesEx(hitbox_visual, 2.0f, cor_obstaculo(obstaculo_atual));
+                DrawText(obstaculo_atual->nome, obstaculo_atual->pos.x - 65, obstaculo_atual->pos.y + 36, 18, DARKGRAY);
+                no_atual = no_atual->proximo;
+            }
+
             EndDrawing();
 
             //fechar janela, por enquanto que n faz algo para retornar ao menu
