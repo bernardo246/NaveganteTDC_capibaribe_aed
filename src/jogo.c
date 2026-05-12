@@ -113,7 +113,7 @@ void jogo_atualizar(void) {
 
 void jogo_encerrar(void) {
     if (jogador_principal.inventario != NULL) {
-        arvore_destruir(jogador_principal.inventario);
+        lista_destruir(jogador_principal.inventario);
         jogador_principal.inventario = NULL;
     }
 

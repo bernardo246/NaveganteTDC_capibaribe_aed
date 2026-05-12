@@ -2,18 +2,27 @@
 
 CC      = gcc
 
-BREW_PREFIX   := $(shell brew --prefix 2>/dev/null)
-RAYLIB_PREFIX := $(shell brew --prefix raylib 2>/dev/null)
+OS := $(shell uname)
 
-RAYLIB_CFLAGS := $(shell pkg-config --cflags raylib 2>/dev/null)
-RAYLIB_LIBS   := $(shell pkg-config --libs raylib 2>/dev/null)
+ifeq ($(OS), Darwin)
+    # macOS
+    BREW_PREFIX   := $(shell brew --prefix 2>/dev/null)
+    RAYLIB_PREFIX := $(shell brew --prefix raylib 2>/dev/null)
 
-ifeq ($(strip $(RAYLIB_CFLAGS)),)
-RAYLIB_CFLAGS = -I$(RAYLIB_PREFIX)/include -I$(BREW_PREFIX)/include
-endif
+    RAYLIB_CFLAGS := $(shell pkg-config --cflags raylib 2>/dev/null)
+    RAYLIB_LIBS   := $(shell pkg-config --libs raylib 2>/dev/null)
 
-ifeq ($(strip $(RAYLIB_LIBS)),)
-RAYLIB_LIBS = -L$(RAYLIB_PREFIX)/lib -L$(BREW_PREFIX)/lib -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+    ifeq ($(strip $(RAYLIB_CFLAGS)),)
+        RAYLIB_CFLAGS = -I$(RAYLIB_PREFIX)/include -I$(BREW_PREFIX)/include
+    endif
+
+    ifeq ($(strip $(RAYLIB_LIBS)),)
+        RAYLIB_LIBS = -L$(RAYLIB_PREFIX)/lib -L$(BREW_PREFIX)/lib -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+    endif
+else
+    # Linux
+    RAYLIB_CFLAGS = -I/usr/local/include
+    RAYLIB_LIBS   = -L/usr/local/lib -lraylib -lm -lpthread -ldl
 endif
 
 CFLAGS  = -Wall -Wextra -std=c11 -Iinclude -Ilib -Isrc $(RAYLIB_CFLAGS)
