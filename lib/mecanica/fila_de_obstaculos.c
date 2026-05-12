@@ -3,7 +3,14 @@
 
 static double tempo_inicio_invencivel = -1.0;
 static double tempo_inicio_jogo = -1.0;
+static double ultimo_spawn_obstaculo = -1.0;
 static int velocidade_atual_obstaculos = 1;
+static const char *TIPOS_OBSTACULO[4] = {
+    "Tronco",
+    "Lixo no rio",
+    "Pilastra de ponte",
+    "Barco parado"
+};
 
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome) {
     if (strcmp(nome, "Tronco") == 0) {
@@ -62,6 +69,44 @@ void init_obstacle(obstaculo *obstaculo, const char *nome){
     obstaculo->pos.y = posicao_aleatoria;
     obstaculo->all_obstaculos = NULL;
     obstaculo->obstaculos_ativos = NULL;
+}
+
+void iniciar_spawn_obstaculos(void) {
+    ultimo_spawn_obstaculo = GetTime() - 2.0;
+}
+
+void spawn_obstaculo(Fila *obstaculos_ativos) {
+    if (obstaculos_ativos == NULL) return;
+
+    obstaculo *novo_obstaculo = (obstaculo *)malloc(sizeof(obstaculo));
+    if (novo_obstaculo == NULL) return;
+
+    const char *tipo = TIPOS_OBSTACULO[GetRandomValue(0, 3)];
+    init_obstacle(novo_obstaculo, tipo);
+    novo_obstaculo->pos.x = 1280 + novo_obstaculo->hitbox.largura;
+
+    if (!fila_enfileirar(obstaculos_ativos, novo_obstaculo)) {
+        free(novo_obstaculo);
+    }
+}
+
+void atualizar_spawn_obstaculos(Fila *obstaculos_ativos) {// aqui eu consigo alterar a velocidade de spawn
+    if (obstaculos_ativos == NULL) return;
+    if (ultimo_spawn_obstaculo < 0.0) {
+        iniciar_spawn_obstaculos();
+    }
+
+    double agora = GetTime();
+    double intervalo_spawn = 3.0 - (tempo_desde_inicio_jogo() * 0.03);// 3 é o intervalo inicial e 0.03 a medida que passa ele vai reduzindo isso
+    if (intervalo_spawn < 0.25) {
+        intervalo_spawn = 0.25;
+    }
+
+
+    if ((agora - ultimo_spawn_obstaculo) >= intervalo_spawn) {
+        spawn_obstaculo(obstaculos_ativos);
+        ultimo_spawn_obstaculo = agora;
+    }
 }
 
 void iniciar_cronometro_jogo(void) {

@@ -15,29 +15,6 @@
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
 
-static void inicializar_obstaculos_teste(void) {
-    const char *nomes[4] = {"Tronco", "Lixo no rio", "Pilastra de ponte", "Barco parado"};
-    Posicao posicoes[4] = {
-        {.x = 240, .y = 180},
-        {.x = 520, .y = 320},
-        {.x = 820, .y = 220},
-        {.x = 1080, .y = 420}
-    };
-
-    for (int i = 0; i < 4; i++) {
-        obstaculo *novo_obstaculo = (obstaculo *)malloc(sizeof(obstaculo));
-        if (novo_obstaculo == NULL) {
-            continue;
-        }
-
-        init_obstacle(novo_obstaculo, nomes[i]);
-        novo_obstaculo->pos = posicoes[i];
-        if (!fila_enfileirar(obstaculos_ativos, novo_obstaculo)) {
-            free(novo_obstaculo);
-        }
-    }
-}
-
 static Color cor_obstaculo(const obstaculo *obstaculo_atual) {
     if (strcmp(obstaculo_atual->nome, "Tronco") == 0) return BROWN;
     if (strcmp(obstaculo_atual->nome, "Lixo no rio") == 0) return DARKGREEN;
@@ -70,9 +47,10 @@ void jogo_iniciar(void) {
     printf("Iniciando jogo...\n");
     /* TODO: inicializar fila de trechos, arvore de itens, estado do jogador */
     obstaculos_ativos = fila_criar();
-    iniciar_cronometro_jogo();
-    inicializar_obstaculos_teste();
     InitWindow(1280,720,"navegante_tdc");
+    iniciar_cronometro_jogo();
+    iniciar_spawn_obstaculos();
+    spawn_obstaculo(obstaculos_ativos);
     SetTargetFPS(60); 
     jogo_atualizar();
     jogo_encerrar();
@@ -89,6 +67,7 @@ void jogo_atualizar(void) {
     while(!WindowShouldClose()){
             if(jogador_principal.vida<=0)break;
             mov_jogador(&jogador_principal);
+            atualizar_spawn_obstaculos(obstaculos_ativos);
             atualizar_obstaculos(obstaculos_ativos, &jogador_principal);
             if (jogador_principal.vida < 0) {
                 jogador_principal.vida = 0;
@@ -105,8 +84,9 @@ void jogo_atualizar(void) {
                              (jogador_principal.vida > 20) ? ORANGE : RED;
             DrawRectangle(barra_x, barra_y, largura_vida, barra_altura, cor_vida);
             DrawText(TextFormat("Tempo: %.1fs", tempo_desde_inicio_jogo()), 40, 125, 20, DARKGRAY);
+            DrawText(TextFormat("Obstaculos ativos: %d", fila_tamanho(obstaculos_ativos)), 40, 150, 20, DARKGRAY);
 
-            DrawCircle(jogador_principal.pos.x, jogador_principal.pos.y, 20.0f, RED);
+            DrawRectangle(jogador_principal.pos.x, jogador_principal.pos.y,jogador_principal.hitbox.largura,jogador_principal.hitbox.altura, RED);
 
             No *no_atual = obstaculos_ativos->inicio;
             while (no_atual != NULL) {

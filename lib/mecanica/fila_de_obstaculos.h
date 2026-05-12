@@ -13,6 +13,9 @@
 
 void init_obstacle(obstaculo *obstaculo, const char *nome);
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome);
+void iniciar_spawn_obstaculos(void);
+void spawn_obstaculo(Fila *obstaculos_ativos);
+void atualizar_spawn_obstaculos(Fila *obstaculos_ativos);
 void iniciar_cronometro_jogo(void);
 double tempo_desde_inicio_jogo(void);
 void atualizar_velocidade_obstaculos(void);
