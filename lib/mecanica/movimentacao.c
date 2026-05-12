@@ -13,5 +13,5 @@ void mov_jogador(jogador *jogador){
 }
 
 void mov_obstacle(obstaculo *obstaculo){
-    obstaculo->pos.x--;
+    obstaculo->pos.x -=obstaculo->velocidade;
 }

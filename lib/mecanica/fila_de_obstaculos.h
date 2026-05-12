@@ -13,6 +13,10 @@
 
 void init_obstacle(obstaculo *obstaculo, const char *nome);
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome);
+void iniciar_cronometro_jogo(void);
+double tempo_desde_inicio_jogo(void);
+void atualizar_velocidade_obstaculos(void);
+void dificuldade_progressiva(obstaculo *obstaculo);
 void tempo_invencivel(jogador *jogador_atual);
 void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual);
 int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo);
