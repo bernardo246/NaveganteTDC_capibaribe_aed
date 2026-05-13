@@ -47,11 +47,9 @@ void jogo_iniciar(void) {
     printf("Iniciando jogo...\n");
     /* TODO: inicializar fila de trechos, arvore de itens, estado do jogador */
     obstaculos_ativos = fila_criar();
-    InitWindow(1280,720,"navegante_tdc");
     iniciar_cronometro_jogo();
     iniciar_spawn_obstaculos();
     spawn_obstaculo(obstaculos_ativos);
-    SetTargetFPS(60); 
     jogo_atualizar();
     jogo_encerrar();
 }
@@ -126,5 +124,4 @@ void jogo_encerrar(void) {
         obstaculos_ativos = NULL;
     }
 
-    CloseWindow();
 }
