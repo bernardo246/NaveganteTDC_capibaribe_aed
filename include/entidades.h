@@ -9,10 +9,10 @@
 
 #include "tipos.h"
 #include "default_structs.h"
+#include "item.h"
 
 typedef struct Linkedlist_obstaculo Linkedlist_obstaculo;
 typedef struct Linkedlist_item Linkedlist_item;
-typedef struct Item Item;
 
 // estruturas do obstaculo;
 typedef struct {
@@ -117,25 +117,6 @@ typedef struct jogador {
     Posicao pos;
     
 } jogador;
-
-
-
-
-struct Item {
-
-    int     id;
-    char    tipo[16];  /* ex: "moeda", "power-up", "obstaculo" */
-    int     valor;
-
-    Hitbox hitbox;
-    Animacao animacao;
-
-    Posicao pos;
-
-    Linkedlist_item* all_itens;
-    Linkedlist_item* itens_ativos;
-
-};
 
 struct Linkedlist_item {
     Item* next;

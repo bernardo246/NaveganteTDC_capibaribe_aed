@@ -1,0 +1,1 @@
+// serve pra gerar os itens no mapa, basicamente eu vou ter uma função que vai gerar os itens em posições aleatórias no mapa
