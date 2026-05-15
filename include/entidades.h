@@ -108,15 +108,27 @@ typedef struct jogador {
     int vida;
     int pontuacao;
     int velocidade;
-    int invencivel;
-    Linkedlist_item *inventario;
+    int invencivel; // 0 para não invencível, 1 para invencível
 
+    
+    poderes *poderes;
+    inventario *inventario;
 
     Hitbox hitbox;
     Animacao animacao_andar;
     Posicao pos;
     
 } jogador;
+
+
+// estados que o jogador vai ta, adaptar as funcoes de fila obstaculo de acordo com isso
+typedef struct poderes {
+    bool escudo;
+    bool pa;
+
+} poderes;
+
+
 
 struct Linkedlist_item {
     Item* next;

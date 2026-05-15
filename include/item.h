@@ -2,6 +2,11 @@
 #ifndef ITEM_H
 #define ITEM_H
 
+#incldue <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
 #include "default_structs.h"
 
 struct Linkedlist_item;
