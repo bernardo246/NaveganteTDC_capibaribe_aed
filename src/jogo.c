@@ -2,6 +2,12 @@
 #include "jogo.h"
 
 
+#include "../lib/fila.h"
+#include "../lib/lista.h"
+#include "../lib/ranking.h"
+#include "../lib/mecanica/movimentacao.h"
+#include "../lib/mecanica/fila_de_obstaculos.h"
+#include "../lib/inventario/inventario.h"
 
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
@@ -116,6 +122,8 @@ void jogo_atualizar(void) {
                 no_atual = no_atual->proximo;
             }
 
+            desenhar_inventario(jogador_principal.inventario);
+            
             EndDrawing();
 
             //fechar janela, por enquanto que n faz algo para retornar ao menu

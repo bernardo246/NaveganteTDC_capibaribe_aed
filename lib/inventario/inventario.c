@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <raylib.h>
 #include "inventario.h"
 
 const char *InventarioItem_IMAGEM[] = {
@@ -145,6 +145,41 @@ bool remove_item(Inventario* inventario, TipoItem tipo_item, int quantidade) {
         item_atual = item_atual->next;
     } while (item_atual != inventario->atual); // loop até voltar ao início
     return false; // item não encontrado
+}
+
+void desenhar_inventario(Inventario* inventario) {
+    if (inventario == NULL) return;
+
+    const int slot_tamanho = 64;
+    const int slot_margem = 10;
+    const int total_slots = 4;
+
+    int largura_total = total_slots * slot_tamanho + (total_slots - 1) * slot_margem;
+    int inicio_x = (1280 - largura_total) / 2;
+    int inicio_y = 720 - slot_tamanho - 20;
+
+    // desenha os 4 slots vazios primeiro
+    for (int i = 0; i < total_slots; i++) {
+        int x = inicio_x + i * (slot_tamanho + slot_margem);
+        DrawRectangle(x, inicio_y, slot_tamanho, slot_tamanho, DARKGRAY);
+        DrawRectangleLines(x, inicio_y, slot_tamanho, slot_tamanho, WHITE);
+    }
+
+    // percorre a lista circular e preenche os slots
+    if (inventario->atual == NULL) return;
+
+    InventarioItem* item = inventario->atual;
+    do {
+        int slot_index = (int)item->tipo - 1; // ITEM_MOEDA=1 vai pro slot 0, etc
+        int x = inicio_x + slot_index * (slot_tamanho + slot_margem);
+
+        DrawText(TextFormat("%d", item->quantidade),
+                 x + slot_tamanho - 16,
+                 inicio_y + slot_tamanho - 18,
+                 16, YELLOW);
+
+        item = item->next;
+    } while (item != inventario->atual);
 }
 
 
