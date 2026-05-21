@@ -17,10 +17,34 @@ bool checar_item_usavel(jogador* player, int tipo_item) {
 }
 
 //exemplo de funcao de uso do item, nesse caso do escudo, ele vai deixar o jogador invencivel por um tempo
-void usar_escudo(jogador* player) {
-    if (checar_item_usavel(player, ITEM_ESCUDO)) {
-        // aqui voce pode adicionar a logica para ativar o escudo, por exemplo, definir o jogador como invencivel por um tempo
-        player->invencivel = 1; // exemplo de ativacao do escudo, definindo o jogador como invencivel
-        remove_item(player->inventario, ITEM_ESCUDO, 1); // remove um escudo do inventario do jogador
+void usar_item(jogador* player, int tipo_item) {
+    if (!checar_item_usavel(player, tipo_item)) {
+        printf("Item nao pode ser usado!\n");
+        return;
     }
+
+    // aqui voce pode adicionar a logica de uso do item dependendo do tipo
+    if (tipo_item == ITEM_ESCUDO) {
+        player->invencivel = 1; // ativa o escudo
+        desativar_poder(player, tipo_item); // chama a funcao para desativar o poder depois de um tempo
+    }
+    else if (tipo_item == ITEM_PA) {
+        player->poderes->pa = true; // ativa a pa
+        desativar_poder(player, tipo_item); // chama a funcao para desativar o poder depois de um tempo
+    }
+
+    // aqui voce pode adicionar outras logicas de uso para outros tipos de itens
+
+    remove_item(player->inventario, tipo_item, 1); // remove 1 unidade do item do inventario
+}
+
+void desativar_poder(jogador* player, int tipo_item) {
+    // exemplo de funcao para desativar o poder do item depois de um tempo, nesse caso do escudo, ele vai deixar o jogador invencivel por 5 segundos
+    if (tipo_item == ITEM_ESCUDO) {
+        player->invencivel = 0; // desativa o escudo
+    }
+    else if (tipo_item == ITEM_PA) {
+        player->poderes->pa = false; // desativa a pa
+    }
+ // aqui voce pode adicionar outras logicas de desativacao para outros tipos de itens
 }
