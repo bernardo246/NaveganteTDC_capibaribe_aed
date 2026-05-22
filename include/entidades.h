@@ -77,6 +77,12 @@ struct Linkedlist_obstaculo {
 
 // fim da estrutura do obstaculo
 
+typedef struct Poderes {
+    bool escudo;
+    bool pa;
+
+} Poderes;
+
 
 typedef struct jogador {
     char nome[32];
@@ -86,7 +92,7 @@ typedef struct jogador {
     int invencivel; // 0 para não invencível, 1 para invencível
 
     
-    Poderes *poderes;
+    Poderes poderes;
     Inventario *inventario;
 
     Hitbox hitbox;
@@ -97,11 +103,6 @@ typedef struct jogador {
 
 
 // estados que o jogador vai ta, adaptar as funcoes de fila obstaculo de acordo com isso
-typedef struct Poderes {
-    bool escudo;
-    bool pa;
-
-} Poderes;
 
 
 

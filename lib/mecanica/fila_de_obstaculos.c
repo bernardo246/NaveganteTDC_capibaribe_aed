@@ -199,13 +199,13 @@ int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
     // checando colisao e em caso de poderes especiais ativados:
     if (CheckCollisionRecs(rJogador, rObstaculo) ){
 
-        if (jogador->poderes->pa && strcmp(obstaculo->nome, "lixo no rio") == 0){ // a pa protege o jogador do lixo no rio, mas não de outros obstaculos, entao se o jogador tiver a pa ativa e colidir com um lixo no rio, ele é invencivel e não sofre dano, caso contrário, ele sofre dano normalmente
+        if (jogador->poderes.pa && strcmp(obstaculo->nome, "lixo no rio") == 0){ // a pa protege o jogador do lixo no rio, mas não de outros obstaculos, entao se o jogador tiver a pa ativa e colidir com um lixo no rio, ele é invencivel e não sofre dano, caso contrário, ele sofre dano normalmente
             return 1;
         }
 
         // checa os poderes especiais, se o jogador tiver o escudo ativo, ele absorve o impacto e não sofre dano, se ele tiver a pa ativa, ele é invencível e não sofre dano, caso contrário, ele sofre dano normalmente
-        if (jogador->poderes->escudo){
-            jogador->poderes->escudo = false; // desativa o escudo
+        if (jogador->poderes.escudo){
+            jogador->poderes.escudo = false; // desativa o escudo
             jogador->invencivel=1;
             tempo_inicio_invencivel = GetTime();
             return 1; 

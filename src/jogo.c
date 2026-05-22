@@ -1,19 +1,11 @@
 /* jogo.c - Logica principal do jogo Navegador Capibaribe (Dev 4) */
-
-#include <raylib.h> // TODO: interface grafica - raylib
-#include <stdio.h>
-#include "../include/default_structs.h"
-#include "../include/entidades.h"
-#include "../include/tipos.h"
 #include "jogo.h"
-#include "../lib/fila.h"
-#include "../lib/lista.h"
-#include "../lib/ranking.h"
-#include "../lib/mecanica/movimentacao.h"
-#include "../lib/mecanica/fila_de_obstaculos.h"
+
+
 
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
+static int capacidade_itens_diferentes = 3; // capacidade máxima de tipos de itens diferentes no inventário do jogador
 
 static Color cor_obstaculo(const obstaculo *obstaculo_atual) {
     if (strcmp(obstaculo_atual->nome, "Tronco") == 0) return BROWN;
@@ -29,7 +21,6 @@ void jogo_iniciar(void) {
         .pontuacao = 0,
         .velocidade = 5,
         .invencivel=0,
-        .inventario = NULL,
         .hitbox = {
             .largura = 32,
             .altura = 32
@@ -41,12 +32,35 @@ void jogo_iniciar(void) {
         .pos = {
             .x = 640,
             .y = 360
-        }
+        },
+        .poderes = {
+            .escudo = false,
+            .pa = false
+        },
+
+        // inventario
+        .inventario = inventario_criar(capacidade_itens_diferentes)
+
     };
 
     printf("Iniciando jogo...\n");
-    /* TODO: inicializar fila de trechos, arvore de itens, estado do jogador */
     obstaculos_ativos = fila_criar();
+    if (jogador_principal.inventario == NULL || obstaculos_ativos == NULL) {
+        fprintf(stderr, "Falha ao inicializar o estado do jogo.\n");
+        if (obstaculos_ativos != NULL) {
+            fila_destruir(obstaculos_ativos);
+            obstaculos_ativos = NULL;
+        }
+        free(jogador_principal.inventario);
+        jogador_principal.inventario = NULL;
+        return;
+    }
+
+    jogador_principal.pontuacao = 0;
+    jogador_principal.invencivel = 0;
+    jogador_principal.poderes.escudo = false;
+    jogador_principal.poderes.pa = false;
+
     iniciar_cronometro_jogo();
     iniciar_spawn_obstaculos();
     spawn_obstaculo(obstaculos_ativos);
@@ -111,10 +125,9 @@ void jogo_atualizar(void) {
 
 void jogo_encerrar(void) {
     if (jogador_principal.inventario != NULL) {
-        lista_destruir(jogador_principal.inventario);
+        inventario_destruir(jogador_principal.inventario);
         jogador_principal.inventario = NULL;
     }
-
     if (obstaculos_ativos != NULL) {
         while (!fila_vazia(obstaculos_ativos)) {
             obstaculo *obstaculo_atual = (obstaculo *)fila_desenfileirar(obstaculos_ativos);

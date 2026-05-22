@@ -27,10 +27,10 @@ bool usar_item(jogador* player, TipoItem tipo_item) {
     // se quiser pode adicionar a logica de desativar o poder depois de um tempo usando a funcao desativar_poder, por exemplo, o escudo deixa o jogador invencivel por 5 segundos, entao eu posso usar a funcao desativar_poder para desativar o escudo depois de 5 segundos
     // aqui voce pode adicionar a logica de uso do item dependendo do tipo
     if (tipo_item == ITEM_ESCUDO) {
-        player->invencivel = 1; // ativa o escudo
+        player->poderes.escudo = true; // ativa o escudo
     }
     else if (tipo_item == ITEM_PA) {
-        player->poderes->pa = true; // ativa a pa
+        player->poderes.pa = true; // ativa a pa
     }
 
     // aqui voce pode adicionar outras logicas de uso para outros tipos de itens
@@ -45,7 +45,7 @@ void desativar_poder(jogador* player, TipoItem tipo_item) {
         player->invencivel = 0; // desativa o escudo
     }
     else if (tipo_item == ITEM_PA) {
-        player->poderes->pa = false; // desativa a pa
+        player->poderes.pa = false; // desativa a pa
     }
  // aqui voce pode adicionar outras logicas de desativacao para outros tipos de itens
 }
