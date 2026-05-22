@@ -10,7 +10,12 @@
 #include "tipos.h"
 #include "default_structs.h"
 #include "item.h"
+#include "../lib/inventario/inventario.h"
 
+
+// no topo do entidades.h, no lugar do #include de inventario
+typedef struct Poderes Poderes;
+typedef struct Inventario Inventario;
 typedef struct Linkedlist_obstaculo Linkedlist_obstaculo;
 typedef struct Linkedlist_item Linkedlist_item;
 
@@ -81,8 +86,8 @@ typedef struct jogador {
     int invencivel; // 0 para não invencível, 1 para invencível
 
     
-    poderes *poderes;
-    inventario *inventario;
+    Poderes *poderes;
+    Inventario *inventario;
 
     Hitbox hitbox;
     Animacao animacao_andar;
@@ -92,11 +97,11 @@ typedef struct jogador {
 
 
 // estados que o jogador vai ta, adaptar as funcoes de fila obstaculo de acordo com isso
-typedef struct poderes {
+typedef struct Poderes {
     bool escudo;
     bool pa;
 
-} poderes;
+} Poderes;
 
 
 

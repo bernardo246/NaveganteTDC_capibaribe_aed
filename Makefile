@@ -22,7 +22,7 @@ ifeq ($(OS), Darwin)
 else
     # Linux
     RAYLIB_CFLAGS = -I/usr/local/include
-    RAYLIB_LIBS   = -L/usr/local/lib -lraylib -lm -lpthread -ldl
+    RAYLIB_LIBS   = -L/usr/local/lib -lraylib -lm -lpthread -ldl -lX11
 endif
 
 CFLAGS  = -Wall -Wextra -std=c11 -Iinclude -Ilib -Isrc $(RAYLIB_CFLAGS)
@@ -30,7 +30,7 @@ SRC_DIR = src
 LIB_DIR = lib
 OBJ_DIR = build
 
-ALL_SRCS = $(sort $(shell find $(SRC_DIR) $(LIB_DIR) -type f -name '*.c'))
+ALL_SRCS = $(sort $(shell find $(SRC_DIR) $(LIB_DIR) -type f -name '*.c' ! -name 'test_*.c'))
 OBJS     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(ALL_SRCS))
 
 TARGET = navegador-capibaribe
