@@ -27,31 +27,23 @@ static int posicao_ocupada(Linkedlist_item *lista, Item *novo) {
 Item *gerar_item(Linkedlist_item *lista_itens) {
     Item *item = (Item *)malloc(sizeof(Item));
     if (!item) return NULL;
-
     item->tipo  = (TipoItem)((rand() % 4) + 1);
     item->id    = rand() % 10000;
     item->valor = valores_por_tipo[item->tipo];
-
     item->hitbox.largura = 32;
     item->hitbox.altura  = 32;
-
-    /* tenta encontrar posição livre, no máximo MAX_TENTATIVAS vezes */
     int tentativas = 0;
     do {
         item->pos.x = (float)(rand() % (MAPA_LARGURA - item->hitbox.largura));
         item->pos.y = (float)(rand() % (MAPA_ALTURA  - item->hitbox.altura));
         tentativas++;
     } while (posicao_ocupada(lista_itens, item) && tentativas < MAX_TENTATIVAS);
-
-    /* se não achou posição livre, desiste */
     if (tentativas >= MAX_TENTATIVAS && posicao_ocupada(lista_itens, item)) {
         free(item);
         return NULL;
     }
-
     item->all_itens    = NULL;
     item->itens_ativos = NULL;
-
     return item;
 }
 
@@ -61,11 +53,8 @@ void iniciar_spawn_itens(void) {
 
 void spawn_item(Linkedlist_item *lista_itens) {
     if (!lista_itens) return;
-
     Item *novo = gerar_item(lista_itens);
     if (!novo) return;
-
-    /* insere o item diretamente na lista */
     novo->all_itens = lista_itens;
     lista_itens->next = novo;
 }
@@ -73,10 +62,8 @@ void spawn_item(Linkedlist_item *lista_itens) {
 void atualizar_spawn_itens(Linkedlist_item *lista_itens) {
     if (!lista_itens) return;
     if (ultimo_spawn_item < 0.0) iniciar_spawn_itens();
-
     double agora = GetTime();
-    double intervalo = 5.0; /* spawn de item a cada 5 segundos */
-
+    double intervalo = 5.0; 
     if ((agora - ultimo_spawn_item) >= intervalo) {
         spawn_item(lista_itens);
         ultimo_spawn_item = agora;
@@ -85,7 +72,6 @@ void atualizar_spawn_itens(Linkedlist_item *lista_itens) {
 
 void atualizar_itens(Linkedlist_item *lista_itens, jogador *jogador) {
     if (!lista_itens || !jogador) return;
-
     Item *atual = lista_itens->next;
     while (atual) {
         Item *proximo = atual->all_itens ? atual->all_itens->next : NULL;
