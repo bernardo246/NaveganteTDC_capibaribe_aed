@@ -44,6 +44,8 @@ Item *gerar_item(Linkedlist_item *lista_itens) {
     }
     item->all_itens    = NULL;
     item->itens_ativos = NULL;
+    item->next = NULL;
+    item->tempo_spawn = GetTime();
     return item;
 }
 
@@ -55,7 +57,7 @@ void spawn_item(Linkedlist_item *lista_itens) {
     if (!lista_itens) return;
     Item *novo = gerar_item(lista_itens);
     if (!novo) return;
-    novo->all_itens = lista_itens;
+    novo->next = lista_itens->next;
     lista_itens->next = novo;
 }
 
@@ -72,10 +74,49 @@ void atualizar_spawn_itens(Linkedlist_item *lista_itens) {
 
 void atualizar_itens(Linkedlist_item *lista_itens, jogador *jogador) {
     if (!lista_itens || !jogador) return;
+
+    Item *anterior = NULL;
     Item *atual = lista_itens->next;
-    while (atual) {
-        Item *proximo = atual->all_itens ? atual->all_itens->next : NULL;
-        checarColeta_item(jogador, lista_itens, atual);
+
+    while (atual != NULL) {
+        Item *proximo = atual->next;
+
+        double tempo_vivo = GetTime() - atual->tempo_spawn;
+
+        Rectangle hitbox_jogador = {
+            jogador->pos.x,
+            jogador->pos.y,
+            jogador->hitbox.largura,
+            jogador->hitbox.altura
+        };
+
+        Rectangle hitbox_item = {
+            atual->pos.x,
+            atual->pos.y,
+            atual->hitbox.largura,
+            atual->hitbox.altura
+        };
+
+        bool coletou = CheckCollisionRecs(hitbox_jogador, hitbox_item);
+        bool expirou = tempo_vivo >= 5.0;
+
+        if (coletou || expirou) {
+
+            if (coletou) {
+                checarColeta_item(jogador, lista_itens, atual);
+            }
+
+            if (anterior == NULL) {
+                lista_itens->next = proximo;
+            } else {
+                anterior->next = proximo;
+            }
+
+            free(atual);
+        } else {
+            anterior = atual;
+        }
+
         atual = proximo;
     }
 }
