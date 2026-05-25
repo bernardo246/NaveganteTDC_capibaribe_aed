@@ -33,7 +33,6 @@ bool fetch_item(Inventario* inventario, TipoItem tipo_item);
 bool add_item(Inventario* inventario, TipoItem tipo_item, int quantidade);
 bool remove_item(Inventario* inventario, TipoItem tipo_item, int quantidade);
 void inventario_destruir(Inventario* inventario);
-void desenhar_inventario(Inventario* inventario);
 
 extern const char *InventarioItem_IMAGEM[]; // o extern permite que a definição do array seja feita em um arquivo .c, evitando problemas de múltiplas definições
 
