@@ -7,15 +7,44 @@
 
 void menu_iniciar(void) {
     InitWindow(1280, 720, "Navegador do Capibaribe");
-    SetTargetFPS(60);
 
-    Rectangle botao_jogar  = {490, 300, 300, 60};
-    Rectangle botao_ranking = {490, 380, 300, 60};
-    Rectangle botao_sair   = {490, 460, 300, 60};
+    int largura = GetMonitorWidth(0);
+    int altura = GetMonitorHeight(0);
+    
+    SetTargetFPS(60);
 
     int opcao = 0;
 
+    Texture2D fundo = LoadTexture("assets/sprites/tela_menu.png");
+
     while (!WindowShouldClose()) {
+
+        float larguraBotao = 320;
+        float alturaBotao = 70;
+
+        float centroX = GetScreenWidth()/2 - larguraBotao/2;
+
+        Rectangle botao_jogar = {
+            centroX,
+            300,
+            larguraBotao,
+            alturaBotao
+        };
+
+        Rectangle botao_ranking = {
+            centroX,
+            390,
+            larguraBotao,
+            alturaBotao
+        };
+
+        Rectangle botao_sair = {
+            centroX,
+            480,
+            larguraBotao,
+            alturaBotao
+        };
+
         Vector2 mouse = GetMousePosition();
 
         if (GetMouseDelta().x != 0 || GetMouseDelta().y != 0) opcao = -1;
@@ -36,20 +65,102 @@ void menu_iniciar(void) {
         }
 
         BeginDrawing();
-        ClearBackground((Color){0, 105, 148, 255});
+        DrawTexturePro(fundo,
+            (Rectangle){0, 0, fundo.width, fundo.height},
+            (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()},
+            (Vector2){0, 0},
+            0,
+            WHITE
+        );
 
-        DrawText("Navegador do Capibaribe", 340, 150, 50, WHITE);
+        // ================= CORES =================
 
-        DrawRectangleRec(botao_jogar, (opcao == 0 || CheckCollisionPointRec(mouse, botao_jogar))   ? BLUE : DARKBLUE);
-        DrawRectangleRec(botao_ranking, (opcao == 1 || CheckCollisionPointRec(mouse, botao_ranking)) ? BLUE : DARKBLUE);
-        DrawRectangleRec(botao_sair, (opcao == 2 || CheckCollisionPointRec(mouse, botao_sair))    ? BLUE : DARKBLUE);
+        Color corBotao = (Color){70, 45, 30, 220};
+        Color corHover = (Color){210, 170, 80, 255};
+        Color corTexto = (Color){255, 245, 220, 255};
 
-        DrawText("Novo Jogo",   555, 318, 30, WHITE);
-        DrawText("Ver Ranking", 540, 398, 30, WHITE);
-        DrawText("Sair",        600, 478, 30, WHITE);
+        // ================= HOVER =================
+
+        bool hoverJogar = CheckCollisionPointRec(mouse, botao_jogar);
+        bool hoverRanking = CheckCollisionPointRec(mouse, botao_ranking);
+        bool hoverSair = CheckCollisionPointRec(mouse, botao_sair);
+
+        // ================= BOTÕES =================
+
+        DrawRectangleRounded(
+            botao_jogar,
+            0.25f,
+            10,
+            hoverJogar ? corHover : corBotao
+        );
+
+        DrawRectangleRounded(
+            botao_ranking,
+            0.25f,
+            10,
+            hoverRanking ? corHover : corBotao
+        );
+
+        DrawRectangleRounded(
+            botao_sair,
+            0.25f,
+            10,
+            hoverSair ? corHover : corBotao
+        );
+
+        // ================= BORDAS =================
+
+        DrawRectangleRoundedLines(
+            botao_jogar,
+            0.25f,
+            10,
+            DARKBROWN
+        );
+
+        DrawRectangleRoundedLines(
+            botao_ranking,
+            0.25f,
+            10,
+            DARKBROWN
+        );
+
+        DrawRectangleRoundedLines(
+            botao_sair,
+            0.25f,
+            10,
+            DARKBROWN
+        );
+
+        // ================= TEXTO =================
+
+        DrawText(
+            "NOVO JOGO",
+            botao_jogar.x + 55,
+            botao_jogar.y + 18,
+            32,
+            corTexto
+        );
+
+        DrawText(
+            "VER RANKING",
+            botao_ranking.x + 40,
+            botao_ranking.y + 18,
+            32,
+            corTexto
+        );
+
+        DrawText(
+            "SAIR",
+            botao_sair.x + 115,
+            botao_sair.y + 18,
+            32,
+            corTexto
+        );
 
         EndDrawing();
     }
+
+    UnloadTexture(fundo);
 
     CloseWindow();
 }
