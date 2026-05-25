@@ -1,7 +1,13 @@
 /* jogo.c - Logica principal do jogo Navegador Capibaribe (Dev 4) */
 #include "jogo.h"
+#include "hud.h"
 
-
+#include "../lib/fila.h"
+#include "../lib/lista.h"
+#include "../lib/ranking.h"
+#include "../lib/mecanica/movimentacao.h"
+#include "../lib/mecanica/fila_de_obstaculos.h"
+#include "../lib/inventario/inventario.h"
 
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
@@ -70,11 +76,6 @@ void jogo_iniciar(void) {
 
 void jogo_atualizar(void) {
     /* TODO: logica de cada frame/turno */
-    const int vida_maxima = 100;
-    const int barra_x = 40;
-    const int barra_y = 85;
-    const int barra_largura = 300;
-    const int barra_altura = 24;
 
     while(!WindowShouldClose()){
             if(jogador_principal.vida<=0)break;
@@ -88,13 +89,7 @@ void jogo_atualizar(void) {
             BeginDrawing();
             ClearBackground(RAYWHITE);
             DrawText("Navegante Capibaribe", 40, 40, 30, DARKBLUE);
-            DrawText("Vida", barra_x, barra_y - 26, 20, BLACK);
-            DrawRectangleLines(barra_x, barra_y, barra_largura, barra_altura, BLACK);
 
-            int largura_vida = (jogador_principal.vida * barra_largura) / vida_maxima;
-            Color cor_vida = (jogador_principal.vida > 50) ? GREEN :
-                             (jogador_principal.vida > 20) ? ORANGE : RED;
-            DrawRectangle(barra_x, barra_y, largura_vida, barra_altura, cor_vida);
             DrawText(TextFormat("Tempo: %.1fs", tempo_desde_inicio_jogo()), 40, 125, 20, DARKGRAY);
             DrawText(TextFormat("Obstaculos ativos: %d", fila_tamanho(obstaculos_ativos)), 40, 150, 20, DARKGRAY);
 
@@ -116,6 +111,8 @@ void jogo_atualizar(void) {
                 no_atual = no_atual->proximo;
             }
 
+            hud_desenhar(&jogador_principal);
+            
             EndDrawing();
 
             //fechar janela, por enquanto que n faz algo para retornar ao menu
