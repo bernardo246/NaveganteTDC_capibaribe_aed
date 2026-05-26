@@ -187,6 +187,7 @@ void jogo_atualizar(void) {
         atualizar_spawn_itens(itens_ativos);
         atualizar_itens(itens_ativos, &jogador_principal);
 
+        atualizar_poderes(&jogador_principal);
         atualizar_scroll(jogador_principal.inventario);
 
         if (IsKeyPressed(KEY_SPACE)) {

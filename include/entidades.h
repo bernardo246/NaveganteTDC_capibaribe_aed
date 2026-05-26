@@ -142,7 +142,10 @@ struct Linkedlist_obstaculo {
 
 typedef struct Poderes {
     bool escudo;
+    double tempo_escudo; // tempo restante do escudo, em segundos
+
     bool pa;
+    double tempo_pa; // tempo restante do pa, em segundos
 
 } Poderes;
 

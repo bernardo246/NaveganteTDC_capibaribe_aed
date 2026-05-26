@@ -18,3 +18,9 @@ d 5
 s 0
 l 20
 a 0
+marcelo 2
+marcelo 0
+marcelo 0
+marcelo 0
+marcelo 1
+marcelo 0
