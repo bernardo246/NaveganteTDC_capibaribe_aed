@@ -4,6 +4,16 @@
 #define SLOT_MARGEM  10
 #define TOTAL_SLOTS  4
 
+static Texture2D coracao_hud = {0};
+
+void hud_iniciar(void) {
+    coracao_hud = LoadTexture("assets/sprites/coracao_hud.png");
+}
+
+void hud_encerrar(void) {
+    UnloadTexture(coracao_hud);
+}
+
 void hud_desenhar(jogador *j) {
     int inicio_x = 20;
     int inicio_y = 720 - SLOT_TAMANHO - 50;
@@ -11,13 +21,16 @@ void hud_desenhar(jogador *j) {
     // desenha os 4 slots vazios semi-transparentes
     for (int i = 0; i < TOTAL_SLOTS; i++) {
         int x = inicio_x + i * (SLOT_TAMANHO + SLOT_MARGEM);
-        DrawRectangle(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, Fade(DARKGRAY, 0.5f));
-        DrawRectangleLines(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, WHITE);
+        int slot_selecionado = (j->inventario && j->inventario->atual) ? (int)j->inventario->atual->tipo - 1 : -1;
+        Color cor_slot = (i == slot_selecionado) ? Fade(YELLOW, 0.4f) : Fade(DARKGRAY, 0.5f);
+        Color cor_borda = (i == slot_selecionado) ? YELLOW : WHITE;
+        DrawRectangle(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, cor_slot);
+        DrawRectangleLines(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, cor_borda);
     }
 
         // corações de vida
     int coracao_x = inicio_x + TOTAL_SLOTS * (SLOT_TAMANHO + SLOT_MARGEM) + 20;
-    int coracao_y = inicio_y + 10;
+    int coracao_y = inicio_y;
 
     int coracoes_cheios = 0;
     if (j->vida > 60) coracoes_cheios = 3;
@@ -25,8 +38,8 @@ void hud_desenhar(jogador *j) {
     else if (j->vida > 0)  coracoes_cheios = 1;
 
     for (int i = 0; i < 3; i++) {
-        Color cor = (i < coracoes_cheios) ? RED : GRAY;
-        DrawText("\xe2\x99\xa5", coracao_x + i * 40, coracao_y, 40, cor);
+        Color cor = (i < coracoes_cheios) ? WHITE : GRAY;
+        DrawTexture(coracao_hud, coracao_x + i * 44, coracao_y, cor);
     }
 
     // percorre o inventario e preenche os slots
@@ -40,7 +53,7 @@ void hud_desenhar(jogador *j) {
         DrawText(TextFormat("%d", item->quantidade),
                  x + SLOT_TAMANHO - 16,
                  inicio_y + SLOT_TAMANHO - 18,
-                 16, YELLOW);
+                 16, WHITE);
 
         item = item->next;
     } while (item != j->inventario->atual);

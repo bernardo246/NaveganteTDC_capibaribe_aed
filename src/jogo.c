@@ -16,6 +16,8 @@
 #include "../lib/mecanica/mecanicaItens/mecanicaGeracaoItens.h"
 #include "../lib/inventario/inventario.h"
 #include "../include/clima.h"
+#include "../lib/inventario/scrollInventario.h"
+#include "../lib/mecanica/mecanicaItens/mecanicaUsoItens.h"
 
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
@@ -168,6 +170,7 @@ void jogo_iniciar(const char *nome_jogador) {
 
     atualizar_clima(&clima_atual);
     print_request();
+    hud_iniciar();
     jogo_atualizar();
     jogo_encerrar();
 }
@@ -183,6 +186,14 @@ void jogo_atualizar(void) {
 
         atualizar_spawn_itens(itens_ativos);
         atualizar_itens(itens_ativos, &jogador_principal);
+
+        atualizar_scroll(jogador_principal.inventario);
+
+        if (IsKeyPressed(KEY_SPACE)) {
+            if (jogador_principal.inventario && jogador_principal.inventario->atual) {
+                usar_item(&jogador_principal, jogador_principal.inventario->atual->tipo);
+            }
+        }
 
         if (jogador_principal.vida < 0) {
             jogador_principal.vida = 0;
@@ -334,6 +345,8 @@ void jogo_atualizar(void) {
 }
 
 void jogo_encerrar(void) {
+    hud_encerrar();
+
     UnloadTexture(fundo_jogo);
 
     for (int i = 0; i < 8; i++)
