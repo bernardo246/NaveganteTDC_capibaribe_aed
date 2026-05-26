@@ -29,7 +29,7 @@ int check_colisao_item_jogador(jogador *jogador, Item *item);
  * @param lista_itens: ponteiro para a lista de itens ativos
  * @param item: ponteiro para o item a verificar colisão
  */
-void checarColeta_item(jogador *jogador, Linkedlist_item *lista_itens, Item *item);
+bool checarColeta_item(jogador *jogador, Linkedlist_item *lista_itens, Item *item);
 
 /*
  * Verifica colisão com todos os itens da lista

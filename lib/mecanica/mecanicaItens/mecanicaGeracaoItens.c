@@ -5,13 +5,7 @@
 
 static double ultimo_spawn_item = -1.0;
 
-static const int valores_por_tipo[] = {
-    0,   /* índice 0 — não usado */
-    10,  /* ITEM_MOEDA  = 1 */
-    0,   /* ITEM_ESCUDO = 2 */
-    25,  /* ITEM_PEIXE  = 3 */
-    50   /* ITEM_PA     = 4 */
-};
+
 
 static int posicao_ocupada(Linkedlist_item *lista, Item *novo) {
     if (!lista) return 0;
@@ -29,7 +23,7 @@ Item *gerar_item(Linkedlist_item *lista_itens) {
     if (!item) return NULL;
     item->tipo  = (TipoItem)((rand() % 4) + 1);
     item->id    = rand() % 10000;
-    item->valor = valores_por_tipo[item->tipo];
+    item->valor = 1; // valor padrão, pode ser ajustado para itens específicos
     item->hitbox.largura = 32;
     item->hitbox.altura  = 32;
     int tentativas = 0;
@@ -72,46 +66,25 @@ void atualizar_spawn_itens(Linkedlist_item *lista_itens) {
     }
 }
 
+// essa função vai ser chamada a cada frame, ela vai verificar se o jogador coletou algum item ou se algum item expirou, se o jogador coletou o item, ele vai ser adicionado no inventario do jogador e removido da tela, se o item expirou ele vai ser removido da tela
 void atualizar_itens(Linkedlist_item *lista_itens, jogador *jogador) {
-    if (!lista_itens || !jogador) return;
+    if (!lista_itens || !jogador) return; // segurança para evitar segfaults
 
-    Item *anterior = NULL;
+    Item *anterior = NULL; 
     Item *atual = lista_itens->next;
 
     while (atual != NULL) {
         Item *proximo = atual->next;
 
         double tempo_vivo = GetTime() - atual->tempo_spawn;
-
-        Rectangle hitbox_jogador = {
-            jogador->pos.x,
-            jogador->pos.y,
-            jogador->hitbox.largura,
-            jogador->hitbox.altura
-        };
-
-        Rectangle hitbox_item = {
-            atual->pos.x,
-            atual->pos.y,
-            atual->hitbox.largura,
-            atual->hitbox.altura
-        };
-
-        bool coletou = CheckCollisionRecs(hitbox_jogador, hitbox_item);
+        bool coletou = checarColeta_item(jogador, lista_itens, atual); // retorna se coletou, se sim ja joga no inventario
         bool expirou = tempo_vivo >= 5.0;
 
         if (coletou || expirou) {
-
-            if (coletou) {
-                checarColeta_item(jogador, lista_itens, atual);
-            }
-
-            if (anterior == NULL) {
+            if (anterior == NULL)
                 lista_itens->next = proximo;
-            } else {
+            else
                 anterior->next = proximo;
-            }
-
             free(atual);
         } else {
             anterior = atual;

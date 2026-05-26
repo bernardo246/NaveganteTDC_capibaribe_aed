@@ -20,12 +20,10 @@ int check_colisao_item_jogador(jogador *jogador, Item *item) {
     return CheckCollisionRecs(rJogador, rItem);
 }
 
-void checarColeta_item(jogador *jogador, Linkedlist_item *lista_itens, Item *item) {
+bool checarColeta_item(jogador *jogador, Linkedlist_item *lista_itens, Item *item) {
     if (check_colisao_item_jogador(jogador, item)) {
         // adiciona o item no inventario do jogador
         add_item(jogador->inventario, item->tipo, item->valor);
-        
-        // remove o item do mapa
-        
+                
     }
 }
