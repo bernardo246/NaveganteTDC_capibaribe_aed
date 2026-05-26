@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "tipos.h"
 #include "default_structs.h"
 #include "item.h"
 #include "../lib/inventario/inventario.h"

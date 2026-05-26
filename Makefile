@@ -43,7 +43,7 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(RAYLIB_LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(RAYLIB_LIBS) -lcurl -lcjson
 
 $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)

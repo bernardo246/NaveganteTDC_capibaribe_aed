@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "tipos.h"
 #include "entidades.h"
 #include "item.h"
 

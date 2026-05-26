@@ -4,16 +4,17 @@
 #include <stdio.h>
 #include "../include/default_structs.h"
 #include "../include/entidades.h"
-#include "../include/tipos.h"
 #include "jogo.h"
 #include "../lib/fila.h"
 #include "../lib/lista.h"
 #include "../lib/ranking.h"
 #include "../lib/mecanica/movimentacao.h"
 #include "../lib/mecanica/fila_de_obstaculos.h"
+#include "../include/clima.h"
 
 static jogador jogador_principal;
 static Fila *obstaculos_ativos;
+static Clima clima_atual;
 
 static Color cor_obstaculo(const obstaculo *obstaculo_atual) {
     if (strcmp(obstaculo_atual->nome, "Tronco") == 0) return BROWN;
@@ -44,12 +45,15 @@ void jogo_iniciar(void) {
         }
     };
 
+
     printf("Iniciando jogo...\n");
     /* TODO: inicializar fila de trechos, arvore de itens, estado do jogador */
     obstaculos_ativos = fila_criar();
     iniciar_cronometro_jogo();
     iniciar_spawn_obstaculos();
     spawn_obstaculo(obstaculos_ativos);
+    atualizar_clima(&clima_atual);
+    print_request();
     jogo_atualizar();
     jogo_encerrar();
 }
