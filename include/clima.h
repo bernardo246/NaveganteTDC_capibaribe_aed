@@ -20,6 +20,8 @@ typedef struct Clima {
 
 void atualizar_clima(Clima* clima);
 void print_request();
-void draw_rain(Clima *clima);
+
+//funcoes de desenho
+void desenhar_chuva(Clima *clima);
 
 #endif /* CLIMA_H */

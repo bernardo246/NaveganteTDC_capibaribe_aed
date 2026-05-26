@@ -109,6 +109,8 @@ void atualizar_clima(Clima* clima) {
         free(response);
     } else {
         fprintf(stderr, "Falha ao obter resposta da API\n");
+        clima ->tipo = CLIMA_SOL;
+        clima ->intensidade = 0;
     }
 }
 

@@ -325,6 +325,7 @@ void jogo_atualizar(void) {
         }
 
         hud_desenhar(&jogador_principal);
+        if (clima_atual.tipo == CLIMA_CHUVA) desenhar_chuva(&clima_atual);
 
         EndDrawing();
 
