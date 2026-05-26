@@ -8,3 +8,13 @@ teste2 0
 teste4 0
 teste 0
 teste 0
+teste 0
+. 0
+w 0
+a 5
+as 5
+y 5
+d 5
+s 0
+l 20
+a 0

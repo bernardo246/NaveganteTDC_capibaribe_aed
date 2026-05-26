@@ -21,8 +21,11 @@ void hud_desenhar(jogador *j) {
     // desenha os 4 slots vazios semi-transparentes
     for (int i = 0; i < TOTAL_SLOTS; i++) {
         int x = inicio_x + i * (SLOT_TAMANHO + SLOT_MARGEM);
-        DrawRectangle(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, Fade(DARKGRAY, 0.5f));
-        DrawRectangleLines(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, WHITE);
+        int slot_selecionado = (j->inventario && j->inventario->atual) ? (int)j->inventario->atual->tipo - 1 : -1;
+        Color cor_slot = (i == slot_selecionado) ? Fade(YELLOW, 0.4f) : Fade(DARKGRAY, 0.5f);
+        Color cor_borda = (i == slot_selecionado) ? YELLOW : WHITE;
+        DrawRectangle(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, cor_slot);
+        DrawRectangleLines(x, inicio_y, SLOT_TAMANHO, SLOT_TAMANHO, cor_borda);
     }
 
         // corações de vida
@@ -50,7 +53,7 @@ void hud_desenhar(jogador *j) {
         DrawText(TextFormat("%d", item->quantidade),
                  x + SLOT_TAMANHO - 16,
                  inicio_y + SLOT_TAMANHO - 18,
-                 16, YELLOW);
+                 16, WHITE);
 
         item = item->next;
     } while (item != j->inventario->atual);
