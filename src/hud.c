@@ -4,6 +4,16 @@
 #define SLOT_MARGEM  10
 #define TOTAL_SLOTS  4
 
+static Texture2D coracao_hud = {0};
+
+void hud_iniciar(void) {
+    coracao_hud = LoadTexture("assets/sprites/coracao_hud.png");
+}
+
+void hud_encerrar(void) {
+    UnloadTexture(coracao_hud);
+}
+
 void hud_desenhar(jogador *j) {
     int inicio_x = 20;
     int inicio_y = 720 - SLOT_TAMANHO - 50;
@@ -17,7 +27,7 @@ void hud_desenhar(jogador *j) {
 
         // corações de vida
     int coracao_x = inicio_x + TOTAL_SLOTS * (SLOT_TAMANHO + SLOT_MARGEM) + 20;
-    int coracao_y = inicio_y + 10;
+    int coracao_y = inicio_y;
 
     int coracoes_cheios = 0;
     if (j->vida > 60) coracoes_cheios = 3;
@@ -25,8 +35,8 @@ void hud_desenhar(jogador *j) {
     else if (j->vida > 0)  coracoes_cheios = 1;
 
     for (int i = 0; i < 3; i++) {
-        Color cor = (i < coracoes_cheios) ? RED : GRAY;
-        DrawText("\xe2\x99\xa5", coracao_x + i * 40, coracao_y, 40, cor);
+        Color cor = (i < coracoes_cheios) ? WHITE : GRAY;
+        DrawTexture(coracao_hud, coracao_x + i * 44, coracao_y, cor);
     }
 
     // percorre o inventario e preenche os slots
