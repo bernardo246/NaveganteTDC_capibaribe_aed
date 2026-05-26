@@ -5,10 +5,35 @@
 #include <string.h>
 #include "ranking.h"
 
+static const char *RANKING_ARQUIVO = "ranking.txt";
+
+static void ranking_limpar(Ranking *r) {
+    r->quantidade = 0;
+}
+
+static void ranking_carregar_arquivo(Ranking *r) {
+    FILE *f = fopen(RANKING_ARQUIVO, "r");
+    if (!f) return;
+
+    ranking_limpar(r);
+    while (r->quantidade < RANKING_MAX) {
+        char nome[32];
+        int pontuacao;
+        if (fscanf(f, "%31s %d", nome, &pontuacao) != 2) break;
+        strncpy(r->entradas[r->quantidade].nome, nome, 31);
+        r->entradas[r->quantidade].nome[31] = '\0';
+        r->entradas[r->quantidade].pontuacao = pontuacao;
+        r->quantidade++;
+    }
+    fclose(f);
+    ranking_ordenar(r);
+}
+
 Ranking *ranking_criar(void) {
     Ranking *r = (Ranking *)malloc(sizeof(Ranking));
     if (!r) return NULL;
-    r->quantidade = 0;
+    ranking_limpar(r);
+    ranking_carregar_arquivo(r);
     return r;
 }
 
@@ -17,47 +42,47 @@ void ranking_destruir(Ranking *r) {
 }
 
 int ranking_inserir(Ranking *r, const char *nome, int pontuacao) {
-    if (r->quantidade >= RANKING_MAX) return 0;
-    strncpy(r->entradas[r->quantidade].nome, nome, 31);
-    r->entradas[r->quantidade].nome[31] = '\0';
-    r->entradas[r->quantidade].pontuacao = pontuacao;
-    r->quantidade++;
-    ranking_ordenar(r);
+    if (!r) return 0;
+
+    FILE *f = fopen(RANKING_ARQUIVO, "a");
+    if (!f) return 0;
+    fprintf(f, "%s %d\n", nome, pontuacao);
+    fclose(f);
+
+    ranking_carregar_arquivo(r);
     return 1;
 }
 
-static void merge(Recorde *arr, int l, int m, int r) {
-    int n1 = m - l + 1, n2 = r - m;
-    Recorde *L = (Recorde *)malloc(n1 * sizeof(Recorde));
-    Recorde *R = (Recorde *)malloc(n2 * sizeof(Recorde));
-    if (!L || !R) { free(L); free(R); return; }
-    for (int i = 0; i < n1; i++) L[i] = arr[l + i];
-    for (int j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
-    int i = 0, j = 0, k = l;
-    while (i < n1 && j < n2) {
-        if (L[i].pontuacao >= R[j].pontuacao)
-            arr[k++] = L[i++];
+static void intercala(int inicio, int meio, int fim, Recorde v[]) {
+    int inicio_v01 = inicio, inicio_v02 = meio + 1, poslivre = 0;
+    Recorde aux[RANKING_MAX];
+
+    while (inicio_v01 <= meio && inicio_v02 <= fim) {
+        if (v[inicio_v01].pontuacao >= v[inicio_v02].pontuacao)
+            aux[poslivre++] = v[inicio_v01++];
         else
-            arr[k++] = R[j++];
+            aux[poslivre++] = v[inicio_v02++];
     }
-    while (i < n1) arr[k++] = L[i++];
-    while (j < n2) arr[k++] = R[j++];
-    free(L);
-    free(R);
+    while (inicio_v01 <= meio)
+        aux[poslivre++] = v[inicio_v01++];
+    while (inicio_v02 <= fim)
+        aux[poslivre++] = v[inicio_v02++];
+    for (inicio_v01 = inicio; inicio_v01 <= fim; inicio_v01++)
+        v[inicio_v01] = aux[inicio_v01 - inicio];
 }
 
-static void merge_sort(Recorde *arr, int l, int r) {
-    if (l < r) {
-        int m = l + (r - l) / 2;
-        merge_sort(arr, l, m);
-        merge_sort(arr, m + 1, r);
-        merge(arr, l, m, r);
+static void mergesort_recordes(int inicio, int fim, Recorde v[]) {
+    if (inicio < fim) {
+        int meio = (inicio + fim) / 2;
+        mergesort_recordes(inicio, meio, v);
+        mergesort_recordes(meio + 1, fim, v);
+        intercala(inicio, meio, fim, v);
     }
 }
 
 void ranking_ordenar(Ranking *r) {
     if (r->quantidade > 1)
-        merge_sort(r->entradas, 0, r->quantidade - 1);
+        mergesort_recordes(0, r->quantidade - 1, r->entradas);
 }
 
 void ranking_exibir(const Ranking *r) {

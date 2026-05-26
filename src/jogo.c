@@ -236,6 +236,12 @@ void jogo_encerrar(void) {
         UnloadTexture(pedra2_textures[i]);
 
     if (jogador_principal.inventario != NULL) {
+        int moedas = inventario_quantidade_item(jogador_principal.inventario, ITEM_MOEDA);
+        Ranking *ranking = ranking_criar();
+        if (ranking != NULL) {
+            ranking_inserir(ranking, jogador_principal.nome, moedas);
+            ranking_destruir(ranking);
+        }
         inventario_destruir(jogador_principal.inventario);
         jogador_principal.inventario = NULL;
     }
