@@ -19,6 +19,6 @@ Ranking *ranking_criar(void);
 void     ranking_destruir(Ranking *r);
 int      ranking_inserir(Ranking *r, const char *nome, int pontuacao);
 void     ranking_ordenar(Ranking *r);
-void     ranking_exibir(const Ranking *r);
+void     ranking_exibir(const Ranking *r, Texture2D fundo);
 
 #endif /* RANKING_H */

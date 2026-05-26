@@ -7,7 +7,7 @@
 #include "jogo.h"
 #include "../lib/ranking.h"
 
-static int capturar_nome_jogador(char *destino, size_t tamanho) {
+static int capturar_nome_jogador(char *destino, size_t tamanho, Texture2D fundo) {
     if (destino == NULL || tamanho == 0) return 0;
     destino[0] = '\0';
 
@@ -23,6 +23,17 @@ static int capturar_nome_jogador(char *destino, size_t tamanho) {
         300,
         60
     };
+
+    Rectangle botao_voltar = {
+        GetScreenWidth() / 2.0f - 150,
+        GetScreenHeight() / 2.0f + 120,
+        300,
+        60
+    };
+
+    Color corBotao = (Color){70, 45, 30, 220};
+    Color corHover = (Color){210, 170, 80, 255};
+    Color corTexto = (Color){255, 245, 220, 255};
 
     int tamanho_atual = 0;
     while (!WindowShouldClose()) {
@@ -40,10 +51,19 @@ static int capturar_nome_jogador(char *destino, size_t tamanho) {
         }
 
         Vector2 mouse = GetMousePosition();
+
+        bool hoverBotao = CheckCollisionPointRec(mouse, botao_iniciar);
+        bool hoverCampo = CheckCollisionPointRec(mouse, campo);
+        bool hoverVoltar = CheckCollisionPointRec(mouse, botao_voltar);
+
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
             CheckCollisionPointRec(mouse, botao_iniciar) &&
             tamanho_atual > 0) {
             return 1;
+        }
+
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, botao_voltar)) {
+            return 0;
         }
 
         if (IsKeyPressed(KEY_ENTER) && tamanho_atual > 0) {
@@ -51,17 +71,28 @@ static int capturar_nome_jogador(char *destino, size_t tamanho) {
         }
 
         BeginDrawing();
-        ClearBackground(BLACK);
+
+        DrawTexturePro(fundo,
+            (Rectangle){0, 0, fundo.width, fundo.height},
+            (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()},
+            (Vector2){0, 0},
+            0,
+            WHITE
+        );
 
         DrawText("Digite seu nome", (int)campo.x, (int)campo.y - 40, 24, RAYWHITE);
         DrawRectangleRec(campo, (Color){30, 30, 30, 255});
-        DrawRectangleLinesEx(campo, 2.0f, RAYWHITE);
+        DrawRectangleLinesEx(campo, 2.0f, hoverCampo ? corHover : RAYWHITE);
         DrawText(destino, (int)campo.x + 12, (int)campo.y + 16, 24, RAYWHITE);
 
-        Color cor_botao = (tamanho_atual > 0) ? (Color){200, 180, 90, 255} : (Color){90, 90, 90, 255};
+        Color cor_botao = (tamanho_atual > 0) ? (hoverBotao ? corHover : corBotao) : (Color){90, 90, 90, 255};
         DrawRectangleRounded(botao_iniciar, 0.2f, 10, cor_botao);
-        DrawRectangleRoundedLines(botao_iniciar, 0.2f, 10, RAYWHITE);
-        DrawText("INICIAR", (int)botao_iniciar.x + 85, (int)botao_iniciar.y + 16, 28, BLACK);
+        DrawRectangleRoundedLines(botao_iniciar, 0.2f, 10, DARKBROWN);
+        DrawText("INICIAR", (int)botao_iniciar.x + 85, (int)botao_iniciar.y + 16, 28, corTexto);
+
+        DrawRectangleRounded(botao_voltar, 0.2f, 10, hoverVoltar ? (Color){210, 170, 80, 255} : (Color){70, 45, 30, 220});
+        DrawRectangleRoundedLines(botao_voltar, 0.2f, 10, DARKBROWN);
+        DrawText("VOLTAR", (int)botao_voltar.x + 95, (int)botao_voltar.y + 16, 28, (Color){255, 245, 220, 255});
 
         EndDrawing();
     }
@@ -80,6 +111,7 @@ void menu_iniciar(void) {
     int opcao = 0;
 
     Texture2D fundo = LoadTexture("assets/sprites/tela_menu.png");
+    Texture2D fundo_sub = LoadTexture("assets/sprites/tela_ranking.png");
 
     while (!WindowShouldClose()) {
 
@@ -116,14 +148,14 @@ void menu_iniciar(void) {
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             if (CheckCollisionPointRec(mouse, botao_jogar))   {
                 char nome[32];
-                if (capturar_nome_jogador(nome, sizeof(nome))) {
+                if (capturar_nome_jogador(nome, sizeof(nome), fundo_sub)) {
                     jogo_iniciar(nome);
                 }
             }
             if (CheckCollisionPointRec(mouse, botao_ranking)) {
                 Ranking *ranking = ranking_criar();
                 if (ranking != NULL) {
-                    ranking_exibir(ranking);
+                    ranking_exibir(ranking, fundo_sub);
                     ranking_destruir(ranking);
                 }
             }
@@ -136,14 +168,14 @@ void menu_iniciar(void) {
         if (IsKeyPressed(KEY_ENTER)) {
             if (opcao == 0) {
                 char nome[32];
-                if (capturar_nome_jogador(nome, sizeof(nome))) {
+                if (capturar_nome_jogador(nome, sizeof(nome), fundo_sub)) {
                     jogo_iniciar(nome);
                 }
             }
             if (opcao == 1) {
                 Ranking *ranking = ranking_criar();
                 if (ranking != NULL) {
-                    ranking_exibir(ranking);
+                    ranking_exibir(ranking, fundo_sub);
                     ranking_destruir(ranking);
                 }
             }
