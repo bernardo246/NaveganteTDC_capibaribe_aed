@@ -34,8 +34,16 @@ Item *gerar_item(Linkedlist_item *lista_itens) {
     item->hitbox.altura  = 32;
     int tentativas = 0;
     do {
-        item->pos.x = (float)(rand() % (MAPA_LARGURA - item->hitbox.largura));
-        item->pos.y = (float)(rand() % (MAPA_ALTURA  - item->hitbox.altura));
+        int min_x = 0;
+        int max_x = MAPA_LARGURA - item->hitbox.largura;
+        int min_y = 200;
+        int max_y = 610 - item->hitbox.altura;
+
+        if (max_x < min_x) max_x = min_x;
+        if (max_y < min_y) max_y = min_y;
+
+        item->pos.x = (float)(min_x + (rand() % (max_x - min_x + 1)));
+        item->pos.y = (float)(min_y + (rand() % (max_y - min_y + 1)));
         tentativas++;
     } while (posicao_ocupada(lista_itens, item) && tentativas < MAX_TENTATIVAS);
     if (tentativas >= MAX_TENTATIVAS && posicao_ocupada(lista_itens, item)) {
