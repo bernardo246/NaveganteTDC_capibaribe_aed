@@ -159,6 +159,7 @@ void jogo_iniciar(const char *nome_jogador) {
     iniciar_spawn_itens();
     spawn_item(itens_ativos);
 
+    hud_iniciar();
     jogo_atualizar();
     jogo_encerrar();
 }
@@ -324,6 +325,8 @@ void jogo_atualizar(void) {
 }
 
 void jogo_encerrar(void) {
+    hud_encerrar();
+    
     UnloadTexture(fundo_jogo);
 
     for (int i = 0; i < 8; i++)
