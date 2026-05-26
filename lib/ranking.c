@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <raylib.h>
 #include "ranking.h"
 
 static const char *RANKING_ARQUIVO = "ranking.txt";
@@ -86,7 +87,50 @@ void ranking_ordenar(Ranking *r) {
 }
 
 void ranking_exibir(const Ranking *r) {
-    printf("\n=== Ranking ===\n");
-    for (int i = 0; i < r->quantidade; i++)
-        printf("%d. %-20s %d pts\n", i + 1, r->entradas[i].nome, r->entradas[i].pontuacao);
+    if (!r) return;
+
+    Rectangle painel = {
+        GetScreenWidth() / 2.0f - 250,
+        GetScreenHeight() / 2.0f - 200,
+        500,
+        360
+    };
+    Rectangle botao_voltar = {
+        GetScreenWidth() / 2.0f - 150,
+        GetScreenHeight() / 2.0f + 140,
+        300,
+        60
+    };
+
+    while (!WindowShouldClose()) {
+        Vector2 mouse = GetMousePosition();
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+            CheckCollisionPointRec(mouse, botao_voltar)) {
+            return;
+        }
+
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        DrawRectangleRec(painel, (Color){30, 30, 30, 255});
+        DrawRectangleLinesEx(painel, 2.0f, RAYWHITE);
+        DrawText("RANKING - TOP 5", (int)painel.x + 90, (int)painel.y + 20, 24, RAYWHITE);
+
+        int limite = (r->quantidade < 5) ? r->quantidade : 5;
+        for (int i = 0; i < limite; i++) {
+            int y = (int)painel.y + 70 + (i * 40);
+            DrawText(TextFormat("%d. %-20s %d", i + 1, r->entradas[i].nome, r->entradas[i].pontuacao),
+                     (int)painel.x + 30, y, 22, RAYWHITE);
+        }
+
+        if (limite == 0) {
+            DrawText("Sem pontuacoes ainda", (int)painel.x + 110, (int)painel.y + 120, 20, RAYWHITE);
+        }
+
+        DrawRectangleRounded(botao_voltar, 0.2f, 10, (Color){200, 180, 90, 255});
+        DrawRectangleRoundedLines(botao_voltar, 0.2f, 10, RAYWHITE);
+        DrawText("VOLTAR", (int)botao_voltar.x + 95, (int)botao_voltar.y + 16, 28, BLACK);
+
+        EndDrawing();
+    }
 }

@@ -1,6 +1,7 @@
 /* jogo.c - Logica principal do jogo Navegador Capibaribe (Dev 4) */
 #include "jogo.h"
 #include "hud.h"
+#include <string.h>
 
 #include "../lib/fila.h"
 #include "../lib/lista.h"
@@ -46,8 +47,8 @@ static Color cor_obstaculo(const obstaculo *obstaculo_atual) {
     return DARKGRAY;
 }
 
-void jogo_iniciar(void) {
-    jogador_principal = (jogador){.nome = "Navegante",
+void jogo_iniciar(const char *nome_jogador) {
+    jogador_principal = (jogador){.nome = "",
         .vida = 100,
         .pontuacao = 0,
         .velocidade = 5,
@@ -76,6 +77,13 @@ void jogo_iniciar(void) {
         .inventario = inventario_criar(capacidade_itens_diferentes)
 
     };
+    if (nome_jogador != NULL && nome_jogador[0] != '\0') {
+        strncpy(jogador_principal.nome, nome_jogador, sizeof(jogador_principal.nome) - 1);
+        jogador_principal.nome[sizeof(jogador_principal.nome) - 1] = '\0';
+    } else {
+        strncpy(jogador_principal.nome, "Navegante", sizeof(jogador_principal.nome) - 1);
+        jogador_principal.nome[sizeof(jogador_principal.nome) - 1] = '\0';
+    }
 
     fundo_jogo = LoadTexture("assets/sprites/imagem_fundo1.png");
     for (int i = 0; i < 8; i++)

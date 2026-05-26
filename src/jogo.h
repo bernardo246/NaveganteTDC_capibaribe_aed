@@ -22,7 +22,7 @@
 #include "../lib/mecanica/mecanicaItens/mecanicaUsoItens.h"
 #include "../lib/inventario/inventario.h"
 
-void jogo_iniciar(void);
+void jogo_iniciar(const char *nome_jogador);
 void jogo_atualizar(void);
 void jogo_encerrar(void);
 
