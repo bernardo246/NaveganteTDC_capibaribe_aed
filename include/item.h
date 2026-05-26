@@ -27,6 +27,8 @@ typedef struct Item {
     Animacao animacao;
     Posicao pos;
 
+    double tempo_spawn;
+    struct Item *next;
     struct Linkedlist_item* all_itens;
     struct Linkedlist_item* itens_ativos;
 } Item;

@@ -41,33 +41,97 @@ static const obstaculo TRONCO_PADRAO = {
     .nome = "Tronco",
     .descricao = "Detritos naturais arrastados pela correnteza",
     .velocidade = 1,
-    .hitbox = {.largura = 96, .altura = 28},
+    .hitbox = {.largura = 256, .altura = 88},
+    .animacao_andar = {
+        .num_frames = 9,
+        .frames = {
+            "assets/sprites/obstaculos/tronco/trunk1.png",
+            "assets/sprites/obstaculos/tronco/trunk2.png",
+            "assets/sprites/obstaculos/tronco/trunk3.png",
+            "assets/sprites/obstaculos/tronco/trunk4.png",
+            "assets/sprites/obstaculos/tronco/trunk5.png",
+            "assets/sprites/obstaculos/tronco/trunk4.png",
+            "assets/sprites/obstaculos/tronco/trunk3.png",
+            "assets/sprites/obstaculos/tronco/trunk2.png",
+            "assets/sprites/obstaculos/tronco/trunk1.png"
+        },
+        .frame_atual = 0,
+        .intervalo_frame = 0.08f,
+        .anim_timer = 0.0f
+    }
+};
+
+static const obstaculo LIXO_NO_RIO_GARRAFA_PADRAO = {
+    .nome = "Garrafa no rio",
+    .descricao = "Garrafas plasticas descartadas no Capibaribe",
+    .velocidade = 1,
+    .hitbox = {.largura = 90, .altura = 90},
+    .animacao_andar = {
+        .num_frames = 2,
+        .frames = {
+            "assets/sprites/obstaculos/lixo/garrafa_1.png",
+            "assets/sprites/obstaculos/lixo/garrafa_2.png"
+        },
+        .frame_atual = 0,
+        .intervalo_frame = 0.08f,
+        .anim_timer = 0.0f
+    }
+};
+
+static const obstaculo LIXO_NO_RIO_SACOLA_PADRAO = {
+    .nome = "Sacola no rio",
+    .descricao = "Sacolas plasticas que poluem as aguas do rio",
+    .velocidade = 1,
+    .hitbox = {.largura = 100, .altura = 75},
+    .animacao_andar = {
+        .num_frames = 3,
+        .frames = {
+            "assets/sprites/obstaculos/lixo/sacola1.png",
+            "assets/sprites/obstaculos/lixo/sacola2.png",
+            "assets/sprites/obstaculos/lixo/sacola1.png"
+        },
+        .frame_atual = 0,
+        .intervalo_frame = 0.08f,
+        .anim_timer = 0.0f
+    }
+};
+
+static const obstaculo PEDRA1_PADRAO = {
+    .nome = "Pedra pequena",
+    .descricao = "Rochas menores espalhadas pelo leito do rio",
+    .velocidade = 1,
+    .hitbox = {.largura = 50, .altura = 50},
+    .animacao_andar = {
+        .num_frames = 1,
+        .frames = {"assets/sprites/obstaculos/pedra/pedra_1.png"},
+        .frame_atual = 0,
+        .intervalo_frame = 0.0f,
+        .anim_timer = 0.0f
+    }
+};
+
+static const obstaculo PEDRA2_PADRAO = {
+    .nome = "Pedra grande",
+    .descricao = "Grandes rochas emergindo das aguas do Capibaribe",
+    .velocidade = 1,
+    .hitbox = {.largura = 112, .altura = 92},
+    .animacao_andar = {
+        .num_frames = 1,
+        .frames = {"assets/sprites/obstaculos/pedra/pedra_2.png"},
+        .frame_atual = 0,
+        .intervalo_frame = 0.0f,
+        .anim_timer = 0.0f
+    }
+};
+
+static const obstaculo BARCO_PADRAO = {
+    .nome = "Barco",
+    .descricao = "Embarcacoes em movimento cruzando a rota",
+    .velocidade = 2,
+    .hitbox = {.largura = 120, .altura = 50},
     .animacao_andar = {.num_frames = 0, .frame_atual = 0}
 };
 
-static const obstaculo LIXO_NO_RIO_PADRAO = {
-    .nome = "Lixo no rio",
-    .descricao = "Residuos urbanos que poluem o Capibaribe",
-    .velocidade = 1,
-    .hitbox = {.largura = 48, .altura = 48},
-    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
-};
-
-static const obstaculo PILASTRA_DE_PONTE_PADRAO = {
-    .nome = "Pilastra de ponte",
-    .descricao = "Estruturas das pontes historicas no caminho",
-    .velocidade = 1,
-    .hitbox = {.largura = 80, .altura = 180},
-    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
-};
-
-static const obstaculo BARCO_PARADO_PADRAO = {
-    .nome = "Barco parado",
-    .descricao = "Embarcacoes ancoradas bloqueando a rota",
-    .velocidade = 1,
-    .hitbox = {.largura = 160, .altura = 70},
-    .animacao_andar = {.num_frames = 0, .frame_atual = 0}
-};
 
 struct Linkedlist_obstaculo {
     obstaculo* next;
@@ -75,6 +139,12 @@ struct Linkedlist_obstaculo {
 };
 
 // fim da estrutura do obstaculo
+
+typedef struct Poderes {
+    bool escudo;
+    bool pa;
+
+} Poderes;
 
 
 typedef struct jogador {
@@ -84,23 +154,21 @@ typedef struct jogador {
     int velocidade;
     int invencivel; // 0 para não invencível, 1 para invencível
 
-    
-    Poderes *poderes;
+    int nivel_velocidade; // 0-3, tier do sprite (só aumenta)
+    int dir_x;            // -1=esquerda, 0=parado, 1=direita
+    int dir_y;            // -1=cima, 0=parado, 1=baixo
+
+    Poderes poderes;
     Inventario *inventario;
 
     Hitbox hitbox;
     Animacao animacao_andar;
     Posicao pos;
-    
+
 } jogador;
 
 
 // estados que o jogador vai ta, adaptar as funcoes de fila obstaculo de acordo com isso
-typedef struct Poderes {
-    bool escudo;
-    bool pa;
-
-} Poderes;
 
 
 

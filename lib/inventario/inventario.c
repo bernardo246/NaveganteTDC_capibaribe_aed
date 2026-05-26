@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <raylib.h>
 #include "inventario.h"
 
 const char *InventarioItem_IMAGEM[] = {
@@ -147,5 +147,35 @@ bool remove_item(Inventario* inventario, TipoItem tipo_item, int quantidade) {
     return false; // item não encontrado
 }
 
+int inventario_quantidade_item(Inventario* inventario, TipoItem tipo_item) {
+    if (inventario == NULL || inventario->atual == NULL) {
+        return 0;
+    }
 
+    InventarioItem* item_atual = inventario->atual;
+    do {
+        if (item_atual->tipo == tipo_item) {
+            return item_atual->quantidade;
+        }
+        item_atual = item_atual->next;
+    } while (item_atual != inventario->atual);
 
+    return 0;
+}
+
+void inventario_destruir(Inventario* inventario) {
+    if (inventario == NULL) {
+        return;
+    }
+
+    if (inventario->atual != NULL) {
+        InventarioItem* item_atual = inventario->atual;
+        do {
+            InventarioItem* item_para_remover = item_atual;
+            item_atual = item_atual->next; // move para o próximo item antes de liberar a memória
+            free(item_para_remover); // libera a memória do item
+        } while (item_atual != inventario->atual); // loop até voltar ao início
+    }
+
+    free(inventario); // libera a memória do inventário
+}
