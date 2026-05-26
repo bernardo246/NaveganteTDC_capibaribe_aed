@@ -1,3 +1,4 @@
+#include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -113,4 +114,3 @@ void atualizar_clima(Clima* clima) {
         clima ->intensidade = 0;
     }
 }
-
