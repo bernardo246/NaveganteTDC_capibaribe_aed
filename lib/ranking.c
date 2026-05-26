@@ -86,7 +86,7 @@ void ranking_ordenar(Ranking *r) {
         mergesort_recordes(0, r->quantidade - 1, r->entradas);
 }
 
-void ranking_exibir(const Ranking *r) {
+void ranking_exibir(const Ranking *r, Texture2D fundo) {
     if (!r) return;
 
     Rectangle painel = {
@@ -109,8 +109,16 @@ void ranking_exibir(const Ranking *r) {
             return;
         }
 
+        bool hoverVoltar = CheckCollisionPointRec(mouse, botao_voltar);
+
         BeginDrawing();
-        ClearBackground(BLACK);
+        DrawTexturePro (fundo,
+            (Rectangle){0, 0, fundo.width, fundo.height},
+            (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()},
+            (Vector2){0, 0},
+            0,
+            WHITE
+        );
 
         DrawRectangleRec(painel, (Color){30, 30, 30, 255});
         DrawRectangleLinesEx(painel, 2.0f, RAYWHITE);
@@ -127,9 +135,9 @@ void ranking_exibir(const Ranking *r) {
             DrawText("Sem pontuacoes ainda", (int)painel.x + 110, (int)painel.y + 120, 20, RAYWHITE);
         }
 
-        DrawRectangleRounded(botao_voltar, 0.2f, 10, (Color){200, 180, 90, 255});
-        DrawRectangleRoundedLines(botao_voltar, 0.2f, 10, RAYWHITE);
-        DrawText("VOLTAR", (int)botao_voltar.x + 95, (int)botao_voltar.y + 16, 28, BLACK);
+        DrawRectangleRounded(botao_voltar, 0.2f, 10, hoverVoltar ? (Color){210, 170, 80, 255} : (Color){70, 45, 30, 220});
+        DrawRectangleRoundedLines(botao_voltar, 0.2f, 10, DARKBROWN);
+        DrawText("VOLTAR", (int)botao_voltar.x + 95, (int)botao_voltar.y + 16, 28, (Color){255, 245, 220, 255});
 
         EndDrawing();
     }
