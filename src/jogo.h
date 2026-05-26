@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include "../include/default_structs.h"
 #include "../include/entidades.h"
-#include "../include/tipos.h"
 #include "../lib/fila.h"
 #include "../lib/lista.h"
 #include "../lib/ranking.h"
