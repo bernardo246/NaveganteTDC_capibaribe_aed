@@ -147,6 +147,22 @@ bool remove_item(Inventario* inventario, TipoItem tipo_item, int quantidade) {
     return false; // item não encontrado
 }
 
+int inventario_quantidade_item(Inventario* inventario, TipoItem tipo_item) {
+    if (inventario == NULL || inventario->atual == NULL) {
+        return 0;
+    }
+
+    InventarioItem* item_atual = inventario->atual;
+    do {
+        if (item_atual->tipo == tipo_item) {
+            return item_atual->quantidade;
+        }
+        item_atual = item_atual->next;
+    } while (item_atual != inventario->atual);
+
+    return 0;
+}
+
 void inventario_destruir(Inventario* inventario) {
     if (inventario == NULL) {
         return;

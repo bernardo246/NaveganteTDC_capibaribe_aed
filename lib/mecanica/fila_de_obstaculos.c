@@ -5,11 +5,13 @@ static double tempo_inicio_invencivel = -1.0;
 static double tempo_inicio_jogo = -1.0;
 static double ultimo_spawn_obstaculo = -1.0;
 static int velocidade_atual_obstaculos = 1;
-static const char *TIPOS_OBSTACULO[4] = {
+static const char *TIPOS_OBSTACULO[6] = {
     "Tronco",
-    "Lixo no rio",
-    "Pilastra de ponte",
-    "Barco parado"
+    "Garrafa no rio",
+    "Sacola no rio",
+    "Pedra pequena",
+    "Pedra grande",
+    "Barco"
 };
 
 void set_obstacle_profile(obstaculo *obstaculo, const char *nome) {
@@ -22,32 +24,51 @@ void set_obstacle_profile(obstaculo *obstaculo, const char *nome) {
         return;
     }
 
-    if (strcmp(nome, "Lixo no rio") == 0) {
-        strcpy(obstaculo->nome, LIXO_NO_RIO_PADRAO.nome);
-        strcpy(obstaculo->descricao, LIXO_NO_RIO_PADRAO.descricao);
-        obstaculo->velocidade = LIXO_NO_RIO_PADRAO.velocidade;
-        obstaculo->hitbox = LIXO_NO_RIO_PADRAO.hitbox;
-        obstaculo->animacao_andar = LIXO_NO_RIO_PADRAO.animacao_andar;
+    if (strcmp(nome, "Garrafa no rio") == 0) {
+        strcpy(obstaculo->nome, LIXO_NO_RIO_GARRAFA_PADRAO.nome);
+        strcpy(obstaculo->descricao, LIXO_NO_RIO_GARRAFA_PADRAO.descricao);
+        obstaculo->velocidade = LIXO_NO_RIO_GARRAFA_PADRAO.velocidade;
+        obstaculo->hitbox = LIXO_NO_RIO_GARRAFA_PADRAO.hitbox;
+        obstaculo->animacao_andar = LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar;
         return;
     }
 
-    if (strcmp(nome, "Pilastra de ponte") == 0) {
-        strcpy(obstaculo->nome, PILASTRA_DE_PONTE_PADRAO.nome);
-        strcpy(obstaculo->descricao, PILASTRA_DE_PONTE_PADRAO.descricao);
-        obstaculo->velocidade = PILASTRA_DE_PONTE_PADRAO.velocidade;
-        obstaculo->hitbox = PILASTRA_DE_PONTE_PADRAO.hitbox;
-        obstaculo->animacao_andar = PILASTRA_DE_PONTE_PADRAO.animacao_andar;
+    if (strcmp(nome, "Sacola no rio") == 0) {
+        strcpy(obstaculo->nome, LIXO_NO_RIO_SACOLA_PADRAO.nome);
+        strcpy(obstaculo->descricao, LIXO_NO_RIO_SACOLA_PADRAO.descricao);
+        obstaculo->velocidade = LIXO_NO_RIO_SACOLA_PADRAO.velocidade;
+        obstaculo->hitbox = LIXO_NO_RIO_SACOLA_PADRAO.hitbox;
+        obstaculo->animacao_andar = LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar;
         return;
     }
 
-    if (strcmp(nome, "Barco parado") == 0) {
-        strcpy(obstaculo->nome, BARCO_PARADO_PADRAO.nome);
-        strcpy(obstaculo->descricao, BARCO_PARADO_PADRAO.descricao);
-        obstaculo->velocidade = BARCO_PARADO_PADRAO.velocidade;
-        obstaculo->hitbox = BARCO_PARADO_PADRAO.hitbox;
-        obstaculo->animacao_andar = BARCO_PARADO_PADRAO.animacao_andar;
+    if (strcmp(nome, "Pedra pequena") == 0) {
+        strcpy(obstaculo->nome, PEDRA1_PADRAO.nome);
+        strcpy(obstaculo->descricao, PEDRA1_PADRAO.descricao);
+        obstaculo->velocidade = PEDRA1_PADRAO.velocidade;
+        obstaculo->hitbox = PEDRA1_PADRAO.hitbox;
+        obstaculo->animacao_andar = PEDRA1_PADRAO.animacao_andar;
         return;
     }
+
+    if (strcmp(nome, "Pedra grande") == 0) {
+        strcpy(obstaculo->nome, PEDRA2_PADRAO.nome);
+        strcpy(obstaculo->descricao, PEDRA2_PADRAO.descricao);
+        obstaculo->velocidade = PEDRA2_PADRAO.velocidade;
+        obstaculo->hitbox = PEDRA2_PADRAO.hitbox;
+        obstaculo->animacao_andar = PEDRA2_PADRAO.animacao_andar;
+        return;
+    }
+
+    if (strcmp(nome, "Barco") == 0) {
+        strcpy(obstaculo->nome, BARCO_PADRAO.nome);
+        strcpy(obstaculo->descricao, BARCO_PADRAO.descricao);
+        obstaculo->velocidade = BARCO_PADRAO.velocidade;
+        obstaculo->hitbox = BARCO_PADRAO.hitbox;
+        obstaculo->animacao_andar = BARCO_PADRAO.animacao_andar;
+        return;
+    }
+
 
     strcpy(obstaculo->nome, nome);
     strcpy(obstaculo->descricao, "Obstaculo sem perfil cadastrado");
@@ -81,7 +102,7 @@ void spawn_obstaculo(Fila *obstaculos_ativos) {
     obstaculo *novo_obstaculo = (obstaculo *)malloc(sizeof(obstaculo));
     if (novo_obstaculo == NULL) return;
 
-    const char *tipo = TIPOS_OBSTACULO[GetRandomValue(0, 3)];
+    const char *tipo = TIPOS_OBSTACULO[GetRandomValue(0, 5)];
     init_obstacle(novo_obstaculo, tipo);
     novo_obstaculo->pos.x = 1280 + novo_obstaculo->hitbox.largura;
 
@@ -142,6 +163,10 @@ void tempo_invencivel(jogador *jogador_atual) {
         tempo_inicio_invencivel = -1.0;
     }
 }
+int get_velocidade_atual_obstaculos(void) {
+    return velocidade_atual_obstaculos;
+}
+
 void dificuldade_progressiva(obstaculo *obstaculo) {
     atualizar_velocidade_obstaculos();
     if (obstaculo != NULL) {
@@ -178,28 +203,34 @@ void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual) {
     }
 }
 
+// Margem de folga para cada lado da hitbox (sprites têm área transparente ao redor do visual)
+#define MARGEM_JOGADOR   24.0f
+#define MARGEM_OBSTACULO 14.0f
+
 // retorna 1 se houve colisão, 0 caso contrário. Se o jogador tiver o escudo ativo, ele absorve o impacto e não sofre dano, se ele tiver a pa ativa ele consegue remover o lixo do caminho, se ele tiver a pa ativa e colidir com um lixo no rio, ele é invencivel e não sofre dano, caso contrário, ele sofre dano normalmente
 int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
     tempo_invencivel(jogador);
 
-
     Rectangle rJogador = {
-     jogador->pos.x - jogador->hitbox.largura/2.0f,
-     jogador->pos.y - jogador->hitbox.altura/2.0f,
-     jogador->hitbox.largura,
-     jogador->hitbox.altura
+        jogador->pos.x + MARGEM_JOGADOR,
+        jogador->pos.y + MARGEM_JOGADOR,
+        jogador->hitbox.largura  - 2.0f * MARGEM_JOGADOR,
+        jogador->hitbox.altura   - 2.0f * MARGEM_JOGADOR
     };
+
+    float mw = obstaculo->hitbox.largura  - 2.0f * MARGEM_OBSTACULO;
+    float mh = obstaculo->hitbox.altura   - 2.0f * MARGEM_OBSTACULO;
     Rectangle rObstaculo = {
-     obstaculo->pos.x - obstaculo->hitbox.largura/2.0f,
-     obstaculo->pos.y - obstaculo->hitbox.altura/2.0f,
-     obstaculo->hitbox.largura,
-     obstaculo->hitbox.altura
+        obstaculo->pos.x - mw / 2.0f,
+        obstaculo->pos.y - mh / 2.0f,
+        mw,
+        mh
     };
 
     // checando colisao e em caso de poderes especiais ativados:
     if (CheckCollisionRecs(rJogador, rObstaculo) ){
 
-        if (jogador->poderes.pa && strcmp(obstaculo->nome, "lixo no rio") == 0){ // a pa protege o jogador do lixo no rio, mas não de outros obstaculos, entao se o jogador tiver a pa ativa e colidir com um lixo no rio, ele é invencivel e não sofre dano, caso contrário, ele sofre dano normalmente
+        if (jogador->poderes.pa && (strcmp(obstaculo->nome, "Garrafa no rio") == 0 || strcmp(obstaculo->nome, "Sacola no rio") == 0)){ // a pa protege o jogador do lixo no rio, mas não de outros obstaculos, entao se o jogador tiver a pa ativa e colidir com um lixo no rio, ele é invencivel e não sofre dano, caso contrário, ele sofre dano normalmente
             return 1;
         }
 

@@ -1,6 +1,7 @@
 /* jogo.c - Logica principal do jogo Navegador Capibaribe (Dev 4) */
 #include "jogo.h"
 #include "hud.h"
+#include <string.h>
 
 #include "../lib/fila.h"
 #include "../lib/lista.h"
@@ -15,10 +16,34 @@ static Fila *obstaculos_ativos;
 static Linkedlist_item *itens_ativos;
 static int capacidade_itens_diferentes = 3;
 
+static Texture2D fundo_jogo;
+
+static Texture2D tronco_textures[9];
+static Texture2D garrafa_textures[9];
+static Texture2D sacola_textures[3];
+static Texture2D pedra1_textures[1];
+static Texture2D pedra2_textures[1];
+
+static Texture2D jogador_textures[8];
+
+static const char *JOGADOR_SPRITE_PATHS[8] = {
+    "assets/sprites/jogador/jogador_devagar.png",
+    "assets/sprites/jogador/jogador_acelerando_e_re.png",
+    "assets/sprites/jogador/jogador_vel_media.png",
+    "assets/sprites/jogador/jogador_rapido.png",
+    "assets/sprites/jogador/jogador_cima_devagar.png",
+    "assets/sprites/jogador/jogador_baixo_devagar.png",
+    "assets/sprites/jogador/jogador_cima_rapido.png",
+    "assets/sprites/jogador/jogador_baixo_rapido.png",
+};
+
 static Color cor_obstaculo(const obstaculo *obstaculo_atual) {
     if (strcmp(obstaculo_atual->nome, "Tronco") == 0) return BROWN;
-    if (strcmp(obstaculo_atual->nome, "Lixo no rio") == 0) return DARKGREEN;
-    if (strcmp(obstaculo_atual->nome, "Pilastra de ponte") == 0) return GRAY;
+    if (strcmp(obstaculo_atual->nome, "Garrafa no rio") == 0) return GREEN;
+    if (strcmp(obstaculo_atual->nome, "Sacola no rio") == 0) return DARKGREEN;
+    if (strcmp(obstaculo_atual->nome, "Pedra pequena") == 0) return GRAY;
+    if (strcmp(obstaculo_atual->nome, "Pedra grande") == 0) return DARKGRAY;
+    if (strcmp(obstaculo_atual->nome, "Barco") == 0) return SKYBLUE;
     if (strcmp(obstaculo_atual->nome, "Barco parado") == 0) return BLUE;
     return DARKGRAY;
 }
@@ -39,16 +64,19 @@ static const char *nome_item(const Item *item_atual) {
     return "Item";
 }
 
-void jogo_iniciar(void) {
+void jogo_iniciar(const char *nome_jogador) {
     jogador_principal = (jogador){
-        .nome = "Navegante",
+        .nome = "",
         .vida = 100,
         .pontuacao = 0,
         .velocidade = 5,
         .invencivel = 0,
+        .nivel_velocidade = 0,
+        .dir_x = 0,
+        .dir_y = 0,
         .hitbox = {
-            .largura = 32,
-            .altura = 32
+            .largura = 128,
+            .altura = 128
         },
         .animacao_andar = {
             .num_frames = 0,
@@ -64,6 +92,34 @@ void jogo_iniciar(void) {
         },
         .inventario = inventario_criar(capacidade_itens_diferentes)
     };
+
+    if (nome_jogador != NULL && nome_jogador[0] != '\0') {
+        strncpy(jogador_principal.nome, nome_jogador, sizeof(jogador_principal.nome) - 1);
+        jogador_principal.nome[sizeof(jogador_principal.nome) - 1] = '\0';
+    } else {
+        strncpy(jogador_principal.nome, "Navegante", sizeof(jogador_principal.nome) - 1);
+        jogador_principal.nome[sizeof(jogador_principal.nome) - 1] = '\0';
+    }
+
+    fundo_jogo = LoadTexture("assets/sprites/imagem_fundo1.png");
+
+    for (int i = 0; i < 8; i++)
+        jogador_textures[i] = LoadTexture(JOGADOR_SPRITE_PATHS[i]);
+
+    for (int i = 0; i < TRONCO_PADRAO.animacao_andar.num_frames; i++)
+        tronco_textures[i] = LoadTexture(TRONCO_PADRAO.animacao_andar.frames[i]);
+
+    for (int i = 0; i < LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar.num_frames; i++)
+        garrafa_textures[i] = LoadTexture(LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar.frames[i]);
+
+    for (int i = 0; i < LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar.num_frames; i++)
+        sacola_textures[i] = LoadTexture(LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar.frames[i]);
+
+    for (int i = 0; i < PEDRA1_PADRAO.animacao_andar.num_frames; i++)
+        pedra1_textures[i] = LoadTexture(PEDRA1_PADRAO.animacao_andar.frames[i]);
+
+    for (int i = 0; i < PEDRA2_PADRAO.animacao_andar.num_frames; i++)
+        pedra2_textures[i] = LoadTexture(PEDRA2_PADRAO.animacao_andar.frames[i]);
 
     printf("Iniciando jogo...\n");
 
@@ -123,22 +179,60 @@ void jogo_atualizar(void) {
             jogador_principal.vida = 0;
         }
 
+        int vel = get_velocidade_atual_obstaculos();
+        int novo_nivel = (vel <= 1) ? 0 : (vel == 2) ? 1 : (vel == 3) ? 2 : 3;
+
+        if (novo_nivel > jogador_principal.nivel_velocidade) {
+            jogador_principal.nivel_velocidade = novo_nivel;
+        }
+
+        Texture2D *tex_j;
+
+        if (jogador_principal.dir_x == -1) {
+            tex_j = &jogador_textures[1];
+        } else if (jogador_principal.dir_y == -1) {
+            tex_j = (jogador_principal.nivel_velocidade <= 1)
+                ? &jogador_textures[4]
+                : &jogador_textures[6];
+        } else if (jogador_principal.dir_y == 1) {
+            tex_j = (jogador_principal.nivel_velocidade <= 1)
+                ? &jogador_textures[5]
+                : &jogador_textures[7];
+        } else {
+            tex_j = &jogador_textures[jogador_principal.nivel_velocidade];
+        }
+
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+
+        DrawTexturePro(
+            fundo_jogo,
+            (Rectangle){0, 0, fundo_jogo.width, fundo_jogo.height},
+            (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()},
+            (Vector2){0, 0},
+            0,
+            WHITE
+        );
+
+        DrawTexturePro(
+            *tex_j,
+            (Rectangle){0, 0, tex_j->width, tex_j->height},
+            (Rectangle){
+                jogador_principal.pos.x,
+                jogador_principal.pos.y,
+                jogador_principal.hitbox.largura,
+                jogador_principal.hitbox.altura
+            },
+            (Vector2){0, 0},
+            0.0f,
+            WHITE
+        );
 
         DrawText("Navegante Capibaribe", 40, 40, 30, DARKBLUE);
         DrawText(TextFormat("Tempo: %.1fs", tempo_desde_inicio_jogo()), 40, 125, 20, DARKGRAY);
         DrawText(TextFormat("Obstaculos ativos: %d", fila_tamanho(obstaculos_ativos)), 40, 150, 20, DARKGRAY);
 
-        DrawRectangle(
-            jogador_principal.pos.x,
-            jogador_principal.pos.y,
-            jogador_principal.hitbox.largura,
-            jogador_principal.hitbox.altura,
-            RED
-        );
-
         No *no_atual = obstaculos_ativos->inicio;
+
         while (no_atual != NULL) {
             obstaculo *obstaculo_atual = (obstaculo *)no_atual->dado;
 
@@ -149,14 +243,58 @@ void jogo_atualizar(void) {
                 obstaculo_atual->hitbox.altura
             };
 
-            DrawRectangleRec(hitbox_visual, Fade(cor_obstaculo(obstaculo_atual), 0.5f));
-            DrawRectangleLinesEx(hitbox_visual, 2.0f, cor_obstaculo(obstaculo_atual));
-            DrawText(obstaculo_atual->nome, obstaculo_atual->pos.x - 65, obstaculo_atual->pos.y + 36, 18, DARKGRAY);
+            Texture2D *textures = NULL;
+
+            if (strcmp(obstaculo_atual->nome, "Tronco") == 0) {
+                textures = tronco_textures;
+            } else if (strcmp(obstaculo_atual->nome, "Garrafa no rio") == 0) {
+                textures = garrafa_textures;
+            } else if (strcmp(obstaculo_atual->nome, "Sacola no rio") == 0) {
+                textures = sacola_textures;
+            } else if (strcmp(obstaculo_atual->nome, "Pedra pequena") == 0) {
+                textures = pedra1_textures;
+            } else if (strcmp(obstaculo_atual->nome, "Pedra grande") == 0) {
+                textures = pedra2_textures;
+            }
+
+            if (textures != NULL && obstaculo_atual->animacao_andar.num_frames > 0) {
+                obstaculo_atual->animacao_andar.anim_timer += GetFrameTime();
+
+                if (obstaculo_atual->animacao_andar.anim_timer >= obstaculo_atual->animacao_andar.intervalo_frame) {
+                    obstaculo_atual->animacao_andar.anim_timer = 0.0f;
+                    obstaculo_atual->animacao_andar.frame_atual =
+                        (obstaculo_atual->animacao_andar.frame_atual + 1) %
+                        obstaculo_atual->animacao_andar.num_frames;
+                }
+
+                Texture2D tex = textures[obstaculo_atual->animacao_andar.frame_atual];
+
+                DrawTexturePro(
+                    tex,
+                    (Rectangle){0, 0, tex.width, tex.height},
+                    hitbox_visual,
+                    (Vector2){0, 0},
+                    0.0f,
+                    WHITE
+                );
+            } else {
+                DrawRectangleRec(hitbox_visual, Fade(cor_obstaculo(obstaculo_atual), 0.5f));
+                DrawRectangleLinesEx(hitbox_visual, 2.0f, cor_obstaculo(obstaculo_atual));
+            }
+
+            DrawText(
+                obstaculo_atual->nome,
+                obstaculo_atual->pos.x - 65,
+                obstaculo_atual->pos.y + 36,
+                18,
+                DARKGRAY
+            );
 
             no_atual = no_atual->proximo;
         }
 
         Item *item_atual = itens_ativos->next;
+
         while (item_atual != NULL) {
             DrawRectangle(
                 item_atual->pos.x,
@@ -186,7 +324,35 @@ void jogo_atualizar(void) {
 }
 
 void jogo_encerrar(void) {
+    UnloadTexture(fundo_jogo);
+
+    for (int i = 0; i < 8; i++)
+        UnloadTexture(jogador_textures[i]);
+
+    for (int i = 0; i < TRONCO_PADRAO.animacao_andar.num_frames; i++)
+        UnloadTexture(tronco_textures[i]);
+
+    for (int i = 0; i < LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar.num_frames; i++)
+        UnloadTexture(garrafa_textures[i]);
+
+    for (int i = 0; i < LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar.num_frames; i++)
+        UnloadTexture(sacola_textures[i]);
+
+    for (int i = 0; i < PEDRA1_PADRAO.animacao_andar.num_frames; i++)
+        UnloadTexture(pedra1_textures[i]);
+
+    for (int i = 0; i < PEDRA2_PADRAO.animacao_andar.num_frames; i++)
+        UnloadTexture(pedra2_textures[i]);
+
     if (jogador_principal.inventario != NULL) {
+        int moedas = inventario_quantidade_item(jogador_principal.inventario, ITEM_MOEDA);
+
+        Ranking *ranking = ranking_criar();
+        if (ranking != NULL) {
+            ranking_inserir(ranking, jogador_principal.nome, moedas);
+            ranking_destruir(ranking);
+        }
+
         inventario_destruir(jogador_principal.inventario);
         jogador_principal.inventario = NULL;
     }
