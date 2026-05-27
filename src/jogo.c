@@ -1,12 +1,15 @@
 /* jogo.c - Logica principal do jogo Navegador Capibaribe (Dev 4) */
 
-#include <raylib.h> // TODO: interface grafica - raylib
+#include <raylib.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "../include/default_structs.h"
 #include "../include/entidades.h"
+#include "../include/som.h"
 #include "jogo.h"
 #include "hud.h"
-#include <string.h>
 
 #include "../lib/fila.h"
 #include "../lib/lista.h"
@@ -26,6 +29,9 @@ static Linkedlist_item *itens_ativos;
 static int capacidade_itens_diferentes = 3;
 
 static Texture2D fundo_jogo;
+
+static Texture2D escudo_sprite;
+static Texture2D pa_sprite;
 
 static Texture2D tronco_textures[9];
 static Texture2D garrafa_textures[9];
@@ -112,6 +118,9 @@ void jogo_iniciar(const char *nome_jogador) {
 
     fundo_jogo = LoadTexture("assets/sprites/imagem_fundo1.png");
 
+    escudo_sprite = LoadTexture("assets/sprites/itens/escudo.png");
+    pa_sprite = LoadTexture("assets/sprites/itens/pa.png");
+
     for (int i = 0; i < 8; i++)
         jogador_textures[i] = LoadTexture(JOGADOR_SPRITE_PATHS[i]);
 
@@ -170,6 +179,7 @@ void jogo_iniciar(const char *nome_jogador) {
 
     atualizar_clima(&clima_atual);
     print_request();
+
     hud_iniciar();
     jogo_atualizar();
     jogo_encerrar();
@@ -187,11 +197,20 @@ void jogo_atualizar(void) {
         atualizar_spawn_itens(itens_ativos);
         atualizar_itens(itens_ativos, &jogador_principal);
 
+        TipoItem scroll_antes = jogador_principal.inventario && jogador_principal.inventario->atual
+            ? jogador_principal.inventario->atual->tipo : 0;
         atualizar_scroll(jogador_principal.inventario);
+        TipoItem scroll_depois = jogador_principal.inventario && jogador_principal.inventario->atual
+            ? jogador_principal.inventario->atual->tipo : 0;
+        if (scroll_antes != scroll_depois)
+            tocar_som(SOM_TROCA_ITEM_INVENTARIO);
 
         if (IsKeyPressed(KEY_SPACE)) {
             if (jogador_principal.inventario && jogador_principal.inventario->atual) {
-                usar_item(&jogador_principal, jogador_principal.inventario->atual->tipo);
+                TipoItem tipo_usado = jogador_principal.inventario->atual->tipo;
+                usar_item(&jogador_principal, tipo_usado);
+                if (tipo_usado == ITEM_ESCUDO)
+                    tocar_som(SOM_ATIVACAO_ESCUDO);
             }
         }
 
@@ -246,6 +265,36 @@ void jogo_atualizar(void) {
             0.0f,
             WHITE
         );
+
+        if (jogador_principal.poderes.escudo) {
+            DrawTexturePro(
+                escudo_sprite,
+                (Rectangle){0, 0, escudo_sprite.width, escudo_sprite.height},
+                (Rectangle){
+                    jogador_principal.pos.x + 70,
+                    jogador_principal.pos.y + 25,
+                    50,
+                    50
+                },
+                (Vector2){0, 0},
+                0.0f,
+                WHITE
+            );
+        } else if (jogador_principal.poderes.pa) {
+            DrawTexturePro(
+                pa_sprite,
+                (Rectangle){0, 0, pa_sprite.width, pa_sprite.height},
+                (Rectangle){
+                    jogador_principal.pos.x + 65,
+                    jogador_principal.pos.y + 35,
+                    55,
+                    55
+                },
+                (Vector2){0, 0},
+                0.0f,
+                WHITE
+            );
+        }
 
         DrawText("Navegante Capibaribe", 40, 40, 30, DARKBLUE);
         DrawText(TextFormat("Tempo: %.1fs", tempo_desde_inicio_jogo()), 40, 125, 20, DARKGRAY);
@@ -316,13 +365,39 @@ void jogo_atualizar(void) {
         Item *item_atual = itens_ativos->next;
 
         while (item_atual != NULL) {
-            DrawRectangle(
-                item_atual->pos.x,
-                item_atual->pos.y,
-                item_atual->hitbox.largura,
-                item_atual->hitbox.altura,
-                cor_item(item_atual)
-            );
+            Texture2D *tex_item = NULL;
+
+            if (item_atual->tipo == ITEM_ESCUDO) {
+                tex_item = &escudo_sprite;
+            } else if (item_atual->tipo == ITEM_PA) {
+                tex_item = &pa_sprite;
+            }
+
+            if (tex_item != NULL) {
+                float tamanho_item = 60.0f;
+
+                DrawTexturePro(
+                    *tex_item,
+                    (Rectangle){0, 0, tex_item->width, tex_item->height},
+                    (Rectangle){
+                        item_atual->pos.x,
+                        item_atual->pos.y,
+                        tamanho_item,
+                        tamanho_item
+                    },
+                    (Vector2){0, 0},
+                    0.0f,
+                    WHITE
+                );
+            } else {
+                DrawRectangle(
+                    item_atual->pos.x,
+                    item_atual->pos.y,
+                    item_atual->hitbox.largura,
+                    item_atual->hitbox.altura,
+                    cor_item(item_atual)
+                );
+            }
 
             DrawText(
                 nome_item(item_atual),
@@ -336,7 +411,10 @@ void jogo_atualizar(void) {
         }
 
         hud_desenhar(&jogador_principal);
-        if (clima_atual.tipo == CLIMA_CHUVA) desenhar_chuva(&clima_atual);
+
+        if (clima_atual.tipo == CLIMA_CHUVA) {
+            desenhar_chuva(&clima_atual);
+        }
 
         EndDrawing();
 
@@ -348,6 +426,8 @@ void jogo_encerrar(void) {
     hud_encerrar();
 
     UnloadTexture(fundo_jogo);
+    UnloadTexture(escudo_sprite);
+    UnloadTexture(pa_sprite);
 
     for (int i = 0; i < 8; i++)
         UnloadTexture(jogador_textures[i]);

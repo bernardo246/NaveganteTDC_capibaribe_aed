@@ -5,6 +5,7 @@
 
 #include <raylib.h> // TODO: interface grafica - raylib
 #include <stdio.h>
+#include "../include/som.h"
 #include "../include/default_structs.h"
 #include "../include/entidades.h"
 #include "../lib/fila.h"

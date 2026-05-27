@@ -18,3 +18,9 @@ d 5
 s 0
 l 20
 a 0
+Luiz 0
+Luia 0
+junior 0
+ig 0
+joao 0
+jo 1
