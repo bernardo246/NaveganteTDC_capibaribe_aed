@@ -47,6 +47,11 @@ bool usar_item(jogador* player, TipoItem tipo_item) {
         player->poderes.pa = true; // ativa a pa
         player->poderes.tempo_pa = GetTime(); // define o tempo da pa para 10 segundos
     }
+    else if (tipo_item == ITEM_PEIXE) {
+        player->vida += 20; // exemplo de efeito do item peixe, ele cura o jogador em 20 de vida
+        if (player->vida > 100) player->vida = 100; // limita
+
+    }
 
     // aqui voce pode adicionar outras logicas de uso para outros tipos de itens
 

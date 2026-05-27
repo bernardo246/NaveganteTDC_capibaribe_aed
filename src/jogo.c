@@ -400,6 +400,7 @@ void jogo_atualizar(void) {
 
         BeginDrawing();
 
+
         DrawTexturePro(
             fundo_jogo,
             (Rectangle){0, 0, fundo_jogo.width, fundo_jogo.height},
@@ -586,10 +587,13 @@ void jogo_atualizar(void) {
         }
 
         hud_desenhar(&jogador_principal);
+        hud_desenhar_moedas(moeda);
+
 
         if (clima_atual.tipo == CLIMA_CHUVA) {
             desenhar_chuva(&clima_atual);
         }
+
 
         atualizar_musica();
 
@@ -630,11 +634,9 @@ void jogo_encerrar(void) {
         UnloadTexture(pedra2_textures[i]);
 
     if (jogador_principal.inventario != NULL) {
-        int moedas = jogo_obter_moedas();
-
         Ranking *ranking = ranking_criar();
         if (ranking != NULL) {
-            ranking_inserir(ranking, jogador_principal.nome, moedas);
+            ranking_inserir(ranking, jogador_principal.nome, jogo_obter_moedas());
             ranking_destruir(ranking);
         }
 

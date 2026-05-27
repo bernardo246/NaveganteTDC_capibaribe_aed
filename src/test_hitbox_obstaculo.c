@@ -11,13 +11,24 @@ int main() {
         LIXO_NO_RIO_GARRAFA_PADRAO,
         LIXO_NO_RIO_SACOLA_PADRAO,
         PEDRA1_PADRAO,
-        PEDRA2_PADRAO
+        PEDRA2_PADRAO,
+        BARCO_PADRAO
     };
-    int total = 5;
+    int total = 6;
 
-    Texture2D texturas[5];
+    // caminho manual pro barco já que não tem frame
+    const char *caminhos[] = {
+        obstaculos[0].animacao_andar.frames[0],
+        obstaculos[1].animacao_andar.frames[0],
+        obstaculos[2].animacao_andar.frames[0],
+        obstaculos[3].animacao_andar.frames[0],
+        obstaculos[4].animacao_andar.frames[0],
+        "assets/sprites/obstaculos/barco/barco_devagar.png"
+    };
+
+    Texture2D texturas[6];
     for (int i = 0; i < total; i++) {
-        texturas[i] = LoadTexture(obstaculos[i].animacao_andar.frames[0]);
+        texturas[i] = LoadTexture(caminhos[i]);
     }
 
     Vector2 posicoes[] = {
@@ -25,7 +36,8 @@ int main() {
         {400, 50},
         {600, 50},
         {50,  300},
-        {200, 300}
+        {200, 300},
+        {400, 300}
     };
 
     while (!WindowShouldClose()) {
