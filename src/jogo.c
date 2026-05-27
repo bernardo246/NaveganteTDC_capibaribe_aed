@@ -8,6 +8,7 @@
 #include "../include/default_structs.h"
 #include "../include/entidades.h"
 #include "../include/som.h"
+
 #include "jogo.h"
 #include "hud.h"
 
@@ -38,6 +39,13 @@ static Texture2D garrafa_textures[9];
 static Texture2D sacola_textures[3];
 static Texture2D pedra1_textures[1];
 static Texture2D pedra2_textures[1];
+static Texture2D barco_textures[3];
+
+static const char *BARCO_SPRITE_PATHS[3] = {
+    "assets/sprites/obstaculos/barco/barco_devagar.png",
+    "assets/sprites/obstaculos/barco/barco_acelerando.png",
+    "assets/sprites/obstaculos/barco/barco_rapido.png",
+};
 
 static Texture2D jogador_textures[8];
 
@@ -124,11 +132,16 @@ void jogo_iniciar(const char *nome_jogador) {
     for (int i = 0; i < 8; i++)
         jogador_textures[i] = LoadTexture(JOGADOR_SPRITE_PATHS[i]);
 
+    for (int i = 0; i < 3; i++)
+        barco_textures[i] = LoadTexture(BARCO_SPRITE_PATHS[i]);
+
     for (int i = 0; i < TRONCO_PADRAO.animacao_andar.num_frames; i++)
         tronco_textures[i] = LoadTexture(TRONCO_PADRAO.animacao_andar.frames[i]);
 
     for (int i = 0; i < LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar.num_frames; i++)
         garrafa_textures[i] = LoadTexture(LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar.frames[i]);
+
+    garrafa_textures[1] = LoadTexture("assets/sprites/obstaculos/lixo/garrafa_rapida.png");
 
     for (int i = 0; i < LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar.num_frames; i++)
         sacola_textures[i] = LoadTexture(LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar.frames[i]);
@@ -197,20 +210,31 @@ void jogo_atualizar(void) {
         atualizar_spawn_itens(itens_ativos);
         atualizar_itens(itens_ativos, &jogador_principal);
 
+        atualizar_poderes(&jogador_principal);
+
         TipoItem scroll_antes = jogador_principal.inventario && jogador_principal.inventario->atual
-            ? jogador_principal.inventario->atual->tipo : 0;
+            ? jogador_principal.inventario->atual->tipo
+            : 0;
+
         atualizar_scroll(jogador_principal.inventario);
+
         TipoItem scroll_depois = jogador_principal.inventario && jogador_principal.inventario->atual
-            ? jogador_principal.inventario->atual->tipo : 0;
+            ? jogador_principal.inventario->atual->tipo
+            : 0;
+
         if (scroll_antes != scroll_depois)
             tocar_som(SOM_TROCA_ITEM_INVENTARIO);
 
         if (IsKeyPressed(KEY_SPACE)) {
             if (jogador_principal.inventario && jogador_principal.inventario->atual) {
                 TipoItem tipo_usado = jogador_principal.inventario->atual->tipo;
+
                 usar_item(&jogador_principal, tipo_usado);
+
                 if (tipo_usado == ITEM_ESCUDO)
                     tocar_som(SOM_ATIVACAO_ESCUDO);
+                else if (tipo_usado == ITEM_PA)
+                    tocar_som(SOM_PEGOU_PA);
             }
         }
 
@@ -313,20 +337,47 @@ void jogo_atualizar(void) {
             };
 
             Texture2D *textures = NULL;
+            int barco_idx = -1;
+            int garrafa_idx = -1;
 
             if (strcmp(obstaculo_atual->nome, "Tronco") == 0) {
                 textures = tronco_textures;
             } else if (strcmp(obstaculo_atual->nome, "Garrafa no rio") == 0) {
-                textures = garrafa_textures;
+                garrafa_idx = (vel >= 5) ? 1 : 0;
             } else if (strcmp(obstaculo_atual->nome, "Sacola no rio") == 0) {
                 textures = sacola_textures;
             } else if (strcmp(obstaculo_atual->nome, "Pedra pequena") == 0) {
                 textures = pedra1_textures;
             } else if (strcmp(obstaculo_atual->nome, "Pedra grande") == 0) {
                 textures = pedra2_textures;
+            } else if (strcmp(obstaculo_atual->nome, "Barco") == 0 ||
+                       strcmp(obstaculo_atual->nome, "Barco parado") == 0) {
+                barco_idx = (vel <= 3) ? 0 : (vel <= 6) ? 1 : 2;
             }
 
-            if (textures != NULL && obstaculo_atual->animacao_andar.num_frames > 0) {
+            if (barco_idx >= 0) {
+                Texture2D tex = barco_textures[barco_idx];
+
+                DrawTexturePro(
+                    tex,
+                    (Rectangle){0, 0, tex.width, tex.height},
+                    hitbox_visual,
+                    (Vector2){0, 0},
+                    0.0f,
+                    WHITE
+                );
+            } else if (garrafa_idx >= 0) {
+                Texture2D tex = garrafa_textures[garrafa_idx];
+
+                DrawTexturePro(
+                    tex,
+                    (Rectangle){0, 0, tex.width, tex.height},
+                    hitbox_visual,
+                    (Vector2){0, 0},
+                    0.0f,
+                    WHITE
+                );
+            } else if (textures != NULL && obstaculo_atual->animacao_andar.num_frames > 0) {
                 obstaculo_atual->animacao_andar.anim_timer += GetFrameTime();
 
                 if (obstaculo_atual->animacao_andar.anim_timer >= obstaculo_atual->animacao_andar.intervalo_frame) {
@@ -350,14 +401,6 @@ void jogo_atualizar(void) {
                 DrawRectangleRec(hitbox_visual, Fade(cor_obstaculo(obstaculo_atual), 0.5f));
                 DrawRectangleLinesEx(hitbox_visual, 2.0f, cor_obstaculo(obstaculo_atual));
             }
-
-            DrawText(
-                obstaculo_atual->nome,
-                obstaculo_atual->pos.x - 65,
-                obstaculo_atual->pos.y + 36,
-                18,
-                DARKGRAY
-            );
 
             no_atual = no_atual->proximo;
         }
@@ -432,11 +475,14 @@ void jogo_encerrar(void) {
     for (int i = 0; i < 8; i++)
         UnloadTexture(jogador_textures[i]);
 
+    for (int i = 0; i < 3; i++)
+        UnloadTexture(barco_textures[i]);
+
+    UnloadTexture(garrafa_textures[0]);
+    UnloadTexture(garrafa_textures[1]);
+
     for (int i = 0; i < TRONCO_PADRAO.animacao_andar.num_frames; i++)
         UnloadTexture(tronco_textures[i]);
-
-    for (int i = 0; i < LIXO_NO_RIO_GARRAFA_PADRAO.animacao_andar.num_frames; i++)
-        UnloadTexture(garrafa_textures[i]);
 
     for (int i = 0; i < LIXO_NO_RIO_SACOLA_PADRAO.animacao_andar.num_frames; i++)
         UnloadTexture(sacola_textures[i]);

@@ -30,7 +30,7 @@ typedef struct {
 
     Animacao animacao_andar;
 
-    Linkedlist_obstaculo* all_obstaculos; 
+    Linkedlist_obstaculo* all_obstaculos;
     Linkedlist_obstaculo* obstaculos_ativos;
 
 } obstaculo;
@@ -65,15 +65,14 @@ static const obstaculo LIXO_NO_RIO_GARRAFA_PADRAO = {
     .nome = "Garrafa no rio",
     .descricao = "Garrafas plasticas descartadas no Capibaribe",
     .velocidade = 1,
-    .hitbox = {.largura = 90, .altura = 90},
+    .hitbox = {.largura = 65, .altura = 65},
     .animacao_andar = {
-        .num_frames = 2,
+        .num_frames = 1,
         .frames = {
-            "assets/sprites/obstaculos/lixo/garrafa_1.png",
-            "assets/sprites/obstaculos/lixo/garrafa_2.png"
+            "assets/sprites/obstaculos/lixo/garrafa_1.png"
         },
         .frame_atual = 0,
-        .intervalo_frame = 0.08f,
+        .intervalo_frame = 0.0f,
         .anim_timer = 0.0f
     }
 };
@@ -128,7 +127,7 @@ static const obstaculo BARCO_PADRAO = {
     .nome = "Barco",
     .descricao = "Embarcacoes em movimento cruzando a rota",
     .velocidade = 2,
-    .hitbox = {.largura = 120, .altura = 50},
+    .hitbox = {.largura = 180, .altura = 165},
     .animacao_andar = {.num_frames = 0, .frame_atual = 0}
 };
 
@@ -142,7 +141,10 @@ struct Linkedlist_obstaculo {
 
 typedef struct Poderes {
     bool escudo;
+    double tempo_escudo;
+
     bool pa;
+    double tempo_pa;
 
 } Poderes;
 
@@ -176,8 +178,6 @@ struct Linkedlist_item {
     Item* next;
     Item* prev;
 };
-
-
 
 
 
