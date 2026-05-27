@@ -1,4 +1,5 @@
 #include "mecanicaItensInventario.h"
+#include "jogo.h"
 
 // basicamente eu vou checar se houve colisao do item e do personagem, eu vou verificar o tipo do item e em seguida eu vou remover o item da tela e adicionar o item no inventario do jogador,
 
@@ -23,6 +24,9 @@ int check_colisao_item_jogador(jogador *jogador, Item *item) {
 bool checarColeta_item(jogador *jogador, Linkedlist_item *lista_itens, Item *item) {
     if (check_colisao_item_jogador(jogador, item)) {
         // adiciona o item no inventario do jogador
+        if (item->tipo == ITEM_MOEDA) {
+            jogo_incrementar_moeda();
+        }
         add_item(jogador->inventario, item->tipo, item->valor);
                 return true;
     }

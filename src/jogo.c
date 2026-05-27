@@ -28,7 +28,7 @@ static Fila *obstaculos_ativos;
 static Clima clima_atual;
 static Linkedlist_item *itens_ativos;
 static int capacidade_itens_diferentes = 3;
-
+static int moeda = 0;
 static Texture2D fundo_jogo;
 
 static Texture2D escudo_sprite;
@@ -87,6 +87,14 @@ static const char *nome_item(const Item *item_atual) {
     return "Item";
 }
 
+void jogo_incrementar_moeda(void) {
+    moeda += 1;
+}
+
+int jogo_obter_moedas(void) {
+    return moeda;
+}
+
 void jogo_iniciar(const char *nome_jogador) {
     jogador_principal = (jogador){
         .nome = "",
@@ -115,6 +123,8 @@ void jogo_iniciar(const char *nome_jogador) {
         },
         .inventario = inventario_criar(capacidade_itens_diferentes)
     };
+
+    moeda = 0;
 
     if (nome_jogador != NULL && nome_jogador[0] != '\0') {
         strncpy(jogador_principal.nome, nome_jogador, sizeof(jogador_principal.nome) - 1);
@@ -494,7 +504,7 @@ void jogo_encerrar(void) {
         UnloadTexture(pedra2_textures[i]);
 
     if (jogador_principal.inventario != NULL) {
-        int moedas = inventario_quantidade_item(jogador_principal.inventario, ITEM_MOEDA);
+        int moedas = jogo_obter_moedas();
 
         Ranking *ranking = ranking_criar();
         if (ranking != NULL) {
