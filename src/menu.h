@@ -4,7 +4,5 @@
 #define MENU_H
 
 void menu_iniciar(void);
-void menu_exibir(void);
-int  menu_ler_opcao(void);
 
 #endif /* MENU_H */

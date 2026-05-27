@@ -22,7 +22,7 @@ ifeq ($(OS), Darwin)
 else
     # Linux
     RAYLIB_CFLAGS = -I/usr/local/include
-    RAYLIB_LIBS   = -L/usr/local/lib -lraylib -lm -lpthread -ldl
+    RAYLIB_LIBS   = -L/usr/local/lib -lraylib -lm -lpthread -ldl -lX11
 endif
 
 CFLAGS  = -Wall -Wextra -std=c11 -Iinclude -Ilib -Isrc $(RAYLIB_CFLAGS)
@@ -30,7 +30,7 @@ SRC_DIR = src
 LIB_DIR = lib
 OBJ_DIR = build
 
-ALL_SRCS = $(sort $(shell find $(SRC_DIR) $(LIB_DIR) -type f -name '*.c'))
+ALL_SRCS = $(sort $(shell find $(SRC_DIR) $(LIB_DIR) -type f -name '*.c' ! -name 'test_*.c'))
 OBJS     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(ALL_SRCS))
 
 TARGET = navegador-capibaribe
@@ -43,7 +43,7 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(RAYLIB_LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(RAYLIB_LIBS) -lcurl -lcjson
 
 $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
@@ -51,3 +51,6 @@ $(OBJ_DIR)/%.o: %.c
 
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
+
+test_hitbox_obstaculo: src/test_hitbox_obstaculo.c
+	$(CC) $(CFLAGS) src/test_hitbox_obstaculo.c -o test_hitbox_obstaculo $(RAYLIB_LIBS)
