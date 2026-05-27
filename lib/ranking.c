@@ -8,6 +8,8 @@
 
 static const char *RANKING_ARQUIVO = "ranking.txt";
 
+static void mergesort_recordes(int inicio, int fim, Recorde v[], Recorde aux[]);
+
 static void ranking_limpar(Ranking *r) {
     r->quantidade = 0;
 }
