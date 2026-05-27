@@ -256,3 +256,4 @@ int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
 
  return 0;
 }
+
