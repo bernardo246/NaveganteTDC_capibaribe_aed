@@ -68,8 +68,6 @@ void hud_desenhar(jogador *j) {
         } while (item != j->inventario->primeiro);
     }
 
-    hud_desenhar_moedas(int quantidade);
-
     // desenha slots vazios
     for (int i = 0; i < total_slots; i++) {
         int x = inicio_x + i * (SLOT_TAMANHO + SLOT_MARGEM);
