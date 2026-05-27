@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "jogo.h"
 #include "../lib/ranking.h"
+#include "../include/som.h"
 
 static int capturar_nome_jogador(char *destino, size_t tamanho, Texture2D fundo) {
     if (destino == NULL || tamanho == 0) return 0;
@@ -37,6 +38,8 @@ static int capturar_nome_jogador(char *destino, size_t tamanho, Texture2D fundo)
 
     int tamanho_atual = 0;
     while (!WindowShouldClose()) {
+        atualizar_musica();
+
         int key = GetCharPressed();
         while (key > 0) {
             if (key >= 32 && key <= 126 && tamanho_atual < (int)tamanho - 1) {
@@ -108,12 +111,17 @@ void menu_iniciar(void) {
     
     SetTargetFPS(60);
 
+    InitAudioDevice();
+    sons_carregar();
+    tocar_som(SOM_MUSICA_INTRO);
+
     int opcao = 0;
 
     Texture2D fundo = LoadTexture("assets/sprites/tela_menu.png");
     Texture2D fundo_sub = LoadTexture("assets/sprites/tela_ranking.png");
 
     while (!WindowShouldClose()) {
+        atualizar_musica();
 
         float larguraBotao = 320;
         float alturaBotao = 70;
@@ -278,6 +286,8 @@ void menu_iniciar(void) {
         EndDrawing();
     }
 
+    sons_descarregar();
+    CloseAudioDevice();
     UnloadTexture(fundo);
 
     CloseWindow();
