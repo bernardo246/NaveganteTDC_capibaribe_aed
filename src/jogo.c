@@ -204,7 +204,6 @@ void jogo_iniciar(const char *nome_jogador) {
     iniciar_spawn_itens();
     spawn_item(itens_ativos);
 
-    atualizar_clima(&clima_atual);
     print_request();
 
     hud_iniciar();
@@ -231,6 +230,8 @@ void jogo_atualizar(void) {
         }
 
         atualizar_spawn_obstaculos(obstaculos_ativos);
+        atualizar_clima(&clima_atual);
+
 
         int vida_antes = jogador_principal.vida;
 
