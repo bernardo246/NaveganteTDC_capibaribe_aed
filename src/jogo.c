@@ -633,11 +633,9 @@ void jogo_encerrar(void) {
         UnloadTexture(pedra2_textures[i]);
 
     if (jogador_principal.inventario != NULL) {
-        int moedas = jogo_obter_moedas();
-
         Ranking *ranking = ranking_criar();
         if (ranking != NULL) {
-            ranking_inserir(ranking, jogador_principal.nome, moedas);
+            ranking_inserir(ranking, jogador_principal.nome, jogo_obter_moedas());
             ranking_destruir(ranking);
         }
 
