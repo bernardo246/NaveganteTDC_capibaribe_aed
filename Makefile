@@ -52,5 +52,5 @@ $(OBJ_DIR)/%.o: %.c
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
-test_hitbox_obstaculo: src/test_hitbox_obstaculo.c
+test_hitbox_obstaculo: src/test_hitbox_obstaculo.c include/entidades.h
 	$(CC) $(CFLAGS) src/test_hitbox_obstaculo.c -o test_hitbox_obstaculo $(RAYLIB_LIBS)

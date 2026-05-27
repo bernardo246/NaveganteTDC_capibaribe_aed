@@ -158,7 +158,7 @@ void tempo_invencivel(jogador *jogador_atual) {
         tempo_inicio_invencivel = GetTime();
     }
 
-    if ((GetTime() - tempo_inicio_invencivel) >= 3.0) {
+    if ((GetTime() - tempo_inicio_invencivel) >= 1.0) {
         jogador_atual->invencivel = 0;
         tempo_inicio_invencivel = -1.0;
     }

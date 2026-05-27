@@ -587,7 +587,7 @@ void jogo_atualizar(void) {
         }
 
         hud_desenhar(&jogador_principal);
-        hud_desenhar_moedas(moedas_depois);
+        hud_desenhar_moedas(moeda);
 
 
         if (clima_atual.tipo == CLIMA_CHUVA) {
