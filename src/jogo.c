@@ -214,11 +214,106 @@ void jogo_atualizar(void) {
 
         mov_jogador(&jogador_principal);
 
+        static float tempo_remo = 0.0f;
+
+        tempo_remo += GetFrameTime();
+
+        if ((jogador_principal.dir_x != 0 ||
+            jogador_principal.dir_y != 0) &&
+            tempo_remo >= 0.35f) {
+
+            tocar_som(SOM_REMANDO);
+            tempo_remo = 0.0f;
+        }
+
         atualizar_spawn_obstaculos(obstaculos_ativos);
-        atualizar_obstaculos(obstaculos_ativos, &jogador_principal);
+
+        int vida_antes = jogador_principal.vida;
+
+        atualizar_obstaculos(
+            obstaculos_ativos,
+            &jogador_principal
+        );
+
+        if (jogador_principal.vida < vida_antes) {
+
+            tocar_som(SOM_COLISAO_PEDRA);
+
+            tocar_som(SOM_COLISAO_GARRAFA);
+
+            tocar_som(SOM_COLISAO_TRONCO);
+
+            tocar_som(SOM_COLISAO_SACOLA);
+
+            tocar_som(SOM_COLISAO_PONTE);
+        }
+
+        int moedas_antes =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_MOEDA
+            );
+
+        int escudos_antes =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_ESCUDO
+            );
+
+        int peixes_antes =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_PEIXE
+            );
+
+        int pas_antes =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_PA
+            );
 
         atualizar_spawn_itens(itens_ativos);
-        atualizar_itens(itens_ativos, &jogador_principal);
+
+        atualizar_itens(
+            itens_ativos,
+            &jogador_principal
+        );
+
+        int moedas_depois =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_MOEDA
+            );
+
+        int escudos_depois =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_ESCUDO
+            );
+
+        int peixes_depois =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_PEIXE
+            );
+
+        int pas_depois =
+            inventario_quantidade_item(
+                jogador_principal.inventario,
+                ITEM_PA
+            );
+
+        if (moedas_depois > moedas_antes)
+            tocar_som(SOM_PEGOU_MOEDA);
+
+        if (escudos_depois > escudos_antes)
+            tocar_som(SOM_PEGOU_ESCUDO);
+
+        if (peixes_depois > peixes_antes)
+            tocar_som(SOM_PEGOU_PEIXE);
+
+        if (pas_depois > pas_antes)
+            tocar_som(SOM_PEGOU_PA);
 
         atualizar_poderes(&jogador_principal);
 
@@ -236,17 +331,41 @@ void jogo_atualizar(void) {
             tocar_som(SOM_TROCA_ITEM_INVENTARIO);
 
         if (IsKeyPressed(KEY_SPACE)) {
-            if (jogador_principal.inventario && jogador_principal.inventario->atual) {
-                TipoItem tipo_usado = jogador_principal.inventario->atual->tipo;
 
-                usar_item(&jogador_principal, tipo_usado);
+        if (jogador_principal.inventario &&
+            jogador_principal.inventario->atual) {
 
-                if (tipo_usado == ITEM_ESCUDO)
-                    tocar_som(SOM_ATIVACAO_ESCUDO);
-                else if (tipo_usado == ITEM_PA)
-                    tocar_som(SOM_PEGOU_PA);
+            TipoItem tipo_usado =
+                jogador_principal
+                .inventario
+                ->atual
+                ->tipo;
+
+            usar_item(
+                &jogador_principal,
+                tipo_usado
+            );
+
+            if (tipo_usado == ITEM_ESCUDO) {
+
+                tocar_som(
+                    SOM_ATIVACAO_ESCUDO
+                );
+            }
+            else if (tipo_usado == ITEM_PEIXE) {
+
+                tocar_som(
+                    SOM_CURAR
+                );
+            }
+            else if (tipo_usado == ITEM_PA) {
+
+                tocar_som(
+                    SOM_PEGOU_PA
+                );
             }
         }
+    }
 
         if (jogador_principal.vida < 0) {
             jogador_principal.vida = 0;
@@ -468,6 +587,8 @@ void jogo_atualizar(void) {
         if (clima_atual.tipo == CLIMA_CHUVA) {
             desenhar_chuva(&clima_atual);
         }
+
+        atualizar_musica();
 
         EndDrawing();
 
