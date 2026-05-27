@@ -1,4 +1,4 @@
-# 🚣 Navegante TDC do pina 🌊
+# 🚣 Navegante TDC do Capibaribe 🌊
 
 > **Jogo em C — Vibe: Pontes e Rios do Recife**
 > Projeto de Estrutura de Dados — AED 2026.1
@@ -7,48 +7,77 @@
 
 ## Sobre o Jogo
 
-**Navegador do Capibaribe** é um **Endless Runner aquático** desenvolvido em **C**, inspirado no Rio Capibaribe, nos igarapés e nas pontes históricas que definem a paisagem e a identidade de Recife — a *"Veneza Brasileira"*, com sua rede de rios, canais e mais de 50 pontes.
+**Navegante TDC do Capibaribe** é um **Endless Runner aquático** desenvolvido em **C**, inspirado no Rio Capibaribe e na identidade cultural de Recife — a *"Veneza Brasileira"*, com sua rede de rios, canais e mais de 50 pontes.
 
-O jogador controla uma jangada/canoa descendo o Rio Capibaribe, desviando de obstáculos típicos dos rios recifenses e coletando itens da cultura local.
+O jogador controla uma embarcação descendo o Rio Capibaribe, desviando de obstáculos típicos dos rios recifenses e coletando itens da cultura local.
 
-### Elementos Culturais
+### Elementos do Jogo
 
-- 🌊 Rio Capibaribe e igarapés como cenário principal
-- 🌉 Pontes icônicas de Recife como marcos de fase *(Ponte Duarte Coelho, Ponte Buarque de Macedo)*
-- 🪵 Obstáculos: troncos, lixo no rio, pilastras de pontes, barcos parados
-- 🐟 Itens coletáveis: tainha, flor de mangue, botijão, remo extra
+- 🌊 Rio Capibaribe como cenário principal
+- 🪵 Obstáculos: troncos, garrafas, sacolas, pedras, barcos
+- 🎒 Itens coletáveis: moeda, escudo, peixe, pá
 - ⚡ Velocidade da correnteza aumenta progressivamente
-- 💀 Colisão encerra a partida e registra pontuação no ranking
+- 🌧️ Sistema de clima em tempo real via API (Open-Meteo)
+- 🔊 Efeitos sonoros e música de fundo
+- 🪙 Moedas coletadas definem a pontuação no ranking
 
 ---
 
-## Justificativa da Vibe
+## Dependências
 
-O Rio Capibaribe é símbolo histórico de Recife — presente na literatura, música e arte pernambucana. A vibe **"Pontes e Rios do Recife"** tem forte identidade cultural e diferencia o projeto das demais propostas com temática de praia, homenageando a relação da cidade com a água de forma lúdica e educativa.
+### Linux / WSL (Ubuntu)
+
+```bash
+sudo apt install libcurl4-openssl-dev
+sudo apt install libcjson-dev
+```
+
+### Raylib
+
+```bash
+# Linux / WSL
+sudo apt install libraylib-dev
+
+# macOS
+brew install raylib
+```
+
+---
+
+## Como Compilar
+
+```bash
+make
+```
+
+### Como Executar
+
+```bash
+./navegador-capibaribe
+```
+
+### Compilar teste de hitbox
+
+```bash
+make test_hitbox_obstaculo
+./test_hitbox_obstaculo
+```
 
 ---
 
 ## Estruturas de Dados
 
-### 3.1 Fila (Lista Encadeada) — Obstáculos no Rio
+### Fila (Lista Encadeada) — Obstáculos no Rio
 
-A fila representa os obstáculos e itens chegando pelo rio. Cada nó contém um trecho do rio com seus elementos. É a espinha dorsal da mecânica — sem ela, o rio não flui.
+Controla os obstáculos que chegam pelo rio. Cada nó contém um obstáculo ativo. É a espinha dorsal da mecânica — sem ela, o rio não flui.
 
-### 3.2 Árvore Binária de Busca (BST) — Catálogo de Itens
+### Lista Duplamente Encadeada Circular — Inventário
 
-A BST gerencia todos os itens coletáveis. Cada item tem um código e é armazenado pela pontuação. Ao coletar um item, a BST retorna o valor correspondente.
+Gerencia os itens coletados pelo jogador. Suporta scroll circular para seleção e uso de itens. Limitada por capacidade de tipos diferentes.
 
-```
-          [tainha = 10]
-         /             \
-   [flor = 5]     [botijao = 20]
-   /                          \
-[lixo = -5]           [remo extra = 50]
-```
+### Lista Encadeada + Merge Sort — Ranking
 
-### 3.3 Lista Encadeada — Ranking de Recordes
-
-Armazena as pontuações dos jogadores. Ao fim de cada partida, a pontuação é inserida e ordenada com **Merge Sort** para exibir o **Top 5 Navegadores do Capibaribe**.
+Armazena as pontuações dos jogadores. Ao fim de cada partida, a quantidade de **moedas coletadas** é registrada e ordenada com **Merge Sort** para exibir o **Top 5 Navegantes do Capibaribe**.
 
 ---
 
@@ -57,133 +86,105 @@ Armazena as pontuações dos jogadores. Ao fim de cada partida, a pontuação é
 | Obstáculo | Descrição |
 |-----------|-----------|
 | 🪵 Tronco | Detritos naturais arrastados pela correnteza |
-| 🗑️ Lixo no rio | Resíduos urbanos que poluem o Capibaribe |
-| 🏛️ Pilastra de ponte | Estruturas das pontes históricas no caminho |
-| ⛵ Barco parado | Embarcações ancoradas bloqueando a rota |
+| 🍶 Garrafa no rio | Resíduos plásticos que poluem o Capibaribe |
+| 🛍️ Sacola no rio | Sacolas plásticas flutuando nas águas |
+| 🪨 Pedra pequena | Rochas menores espalhadas pelo leito do rio |
+| 🪨 Pedra grande | Grandes rochas emergindo das águas |
+| ⛵ Barco | Embarcações em movimento cruzando a rota |
 
 ---
 
-## Algoritmo de Ordenação — Merge Sort
+## Itens Coletáveis
 
-Aplicado na lista de recordes ao fim de cada partida.
-
-1. A pontuação é inserida na lista de recordes
-2. O Merge Sort reordena do **maior para o menor**
-3. O menu exibe o **Top 5** com nome do jogador e pontuação
-
----
-
-## Menu do Jogo
-
-```
-================================
-   🚣 NAVEGADOR DO CAPIBARIBE 🌊
-================================
-  1. Jogar
-  2. Ver Recordes (Top 5)
-  3. Como Jogar / Itens
-  4. Sair
-```
+| Item | Efeito |
+|------|--------|
+| 🪙 Moeda | Pontuação — quantidade define o ranking |
+| 🛡️ Escudo | Invencibilidade temporária (5s) |
+| 🐟 Peixe | Recupera vida |
+| 🪛 Pá | Poder especial (10s) |
 
 ---
 
-## Resumo das Estruturas
+## Sistema de Clima
 
-| Estrutura | Aplicação |
-|-----------|-----------|
-| Fila (Lista Encadeada) | Geração e controle dos obstáculos no rio |
-| Árvore Binária de Busca (BST) | Catálogo e pontuação dos itens coletáveis |
-| Lista Encadeada + Merge Sort | Ranking dos recordes (Top 5) |
+O jogo usa a API **Open-Meteo** para buscar dados climáticos reais do Marco Zero de Recife a cada 15 minutos:
+
+- `rain > 0` → ativa efeito visual de chuva na tela
+- `is_day` → detecta se é dia ou noite
+- Atualização automática sem travar o loop do jogo
 
 ---
 
 ## Organização do Repositório
 
 ```
-navegador-capibaribe/
-├── src/               ← lógica do jogo
-│   ├── main.c         ← integração geral (Dev 5)
-│   ├── menu.c / .h    ← menu + loop do jogo (Dev 4)
-│   └── jogo.c / .h    ← lógica principal (Dev 4)
-├── lib/               ← estruturas genéricas reutilizáveis
-│   ├── fila.c / .h    ← fila de trechos do rio (Dev 1)
-│   ├── arvore.c / .h  ← BST de itens coletáveis (Dev 2)
-│   └── ranking.c / .h ← recordes + merge sort (Dev 3)
-├── assets/            ← recursos do jogo
-│   ├── sprites/       ← imagens e animações
-│   ├── sounds/        ← efeitos sonoros e música
-│   └── maps/          ← mapas e fases do rio
-├── include/           ← tipos e headers compartilhados
-│   └── tipos.h
-├── docs/              ← documentação do projeto
-├── Makefile           ← compilação automática (Dev 5)
+NaveganteTDC_capibaribe_aed/
+├── src/                        ← lógica do jogo
+│   ├── main.c                  ← ponto de entrada
+│   ├── menu.c / .h             ← menu principal
+│   ├── jogo.c / .h             ← loop e lógica principal
+│   ├── hud.c / .h              ← interface do jogador
+│   ├── clima.c / .h            ← integração com API de clima
+│   ├── clima_visual.c          ← efeitos visuais de chuva
+│   ├── som.c / .h              ← sistema de áudio
+│   └── test_hitbox_obstaculo.c ← ferramenta de debug de hitbox
+├── lib/                        ← estruturas de dados
+│   ├── fila.c / .h             ← fila de obstáculos
+│   ├── lista.c / .h            ← lista encadeada
+│   ├── ranking.c / .h          ← recordes + merge sort
+│   ├── inventario/
+│   │   ├── inventario.c/h
+│   │   └── scrollInventario.c/h
+│   └── mecanica/               ← mecânicas do jogo
+│       ├── movimentacao.c/h
+│       ├── fila_de_obstaculos.c/h
+│       └── mecanicaItens/
+│           ├── mecanicaGeracaoItens.c/h
+│           ├── mecanicaItensInventario.c/h
+│           └── mecanicaUsoItens.c/h
+├── include/                    ← tipos e headers compartilhados
+│   ├── entidades.h
+│   ├── default_structs.h
+│   ├── item.h
+│   └── clima.h
+├── assets/                     ← recursos do jogo
+│   ├── sprites/                ← imagens e animações
+│   └── sounds/                 ← efeitos sonoros e música
+├── docs/                       ← documentação
+├── Makefile                    ← compilação automática
 └── README.md
 ```
-
-### Como compilar
-
-No macOS, instale a raylib antes de compilar:
-
-```bash
-brew install raylib
-```
-
-```bash
-make
-```
-
-### Como executar
-
-```bash
-./navegador-capibaribe
-```
-
----
-
-## Divisão do Time
-
-| Dev | Papel | Branch | Responsabilidade | Arquivos |
-|-----|-------|--------|-----------------|----------|
-| Dev 1 | Motor do Jogo | `feature/fila-rio` | Fila de Obstáculos (Lista Encadeada) | `fila.c` `fila.h` |
-| Dev 2 | Itens & Pontuação | `feature/arvore-itens` | Árvore Binária de Busca (BST) | `arvore.c` `arvore.h` |
-| Dev 3 | Ranking & Ordenação | `feature/ranking` | Lista de Recordes + Merge Sort | `ranking.c` `ranking.h` |
-| Dev 4 | Interface & Menu | `feature/menu` | Menu Interativo + Loop do Jogo | `menu.c` `menu.h` `jogo.c` |
-| Dev 5 | Integração & Líder Técnico | `feature/integracao` | main.c + integração de módulos + gerência da branch dev | `main.c` `README.md` `Makefile` |
 
 ---
 
 ## Estrutura de Branches
 
 ```
-● main        ← versão final entregável (ninguém commita direto aqui)
-└─ ● dev      ← integração geral (Dev 5 gerencia)
-   ├─ feature/fila-rio       ← Dev 1
-   ├─ feature/arvore-itens   ← Dev 2
-   ├─ feature/ranking        ← Dev 3
-   ├─ feature/menu           ← Dev 4
-   └─ feature/integracao     ← Dev 5
+● main        ← versão final entregável
+└─ ● develop  ← integração geral
+   ├─ marcelo
+   ├─ bernardo
+   ├─ LuizEduardo
+   ├─ rodrigo
+   └─ malu
 ```
 
 ## Fluxo de Trabalho
 
 ```
-sua branch → commit → push → pull request → Dev 5 revisa → main
-trabalha      git add   sobe    pede pra      aceita o       só no fim,
-aqui          . /commit  pro     entrar na     merge na dev   tudo pronto
-                         GitHub  dev
+sua branch → commit → push → merge na develop → main (versão final)
 ```
 
 ---
 
 ## Regras do Time
 
-- 🚫 Nunca commitar direto na `main` ou na `dev`
+- 🚫 Nunca commitar direto na `main` ou na `develop`
 - ✅ Sempre trabalhar na sua própria branch
-- 📝 Mensagem de commit descritiva: `"adiciona função enfileirarTrecho()"`
-- 🔄 Antes de começar: `git pull origin dev` — pra pegar o que os outros fizeram
-- 👑 Dev 5 é o responsável por revisar PRs e fazer merge na `dev`
+- 📝 Mensagem de commit descritiva: `"adiciona função X"`
+- 🔄 Antes de começar: `git pull origin develop`
 - 🏁 Merge na `main` só quando o jogo estiver 100% funcionando
 
 ---
 
-*🚣 Navegador do Capibaribe — AED 2026.1 — Recife, PE*
+*🚣 Navegante TDC do Capibaribe — AED 2026.1 — Recife, PE*
