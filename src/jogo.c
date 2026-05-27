@@ -400,6 +400,9 @@ void jogo_atualizar(void) {
 
         BeginDrawing();
 
+        hud_desenhar_moedas(moedas);
+
+
         DrawTexturePro(
             fundo_jogo,
             (Rectangle){0, 0, fundo_jogo.width, fundo_jogo.height},
