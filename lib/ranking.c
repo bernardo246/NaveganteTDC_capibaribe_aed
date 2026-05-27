@@ -17,17 +17,53 @@ static void ranking_carregar_arquivo(Ranking *r) {
     if (!f) return;
 
     ranking_limpar(r);
-    while (r->quantidade < RANKING_MAX) {
+    Recorde *todos = NULL;
+    size_t total = 0;
+    size_t capacidade = 0;
+
+    while (1) {
         char nome[32];
         int pontuacao;
         if (fscanf(f, "%31s %d", nome, &pontuacao) != 2) break;
-        strncpy(r->entradas[r->quantidade].nome, nome, 31);
-        r->entradas[r->quantidade].nome[31] = '\0';
-        r->entradas[r->quantidade].pontuacao = pontuacao;
-        r->quantidade++;
+
+        if (total == capacidade) {
+            size_t nova_capacidade = capacidade == 0 ? 16 : capacidade * 2;
+            Recorde *novo = realloc(todos, nova_capacidade * sizeof(Recorde));
+            if (!novo) {
+                free(todos);
+                fclose(f);
+                return;
+            }
+            todos = novo;
+            capacidade = nova_capacidade;
+        }
+
+        strncpy(todos[total].nome, nome, 31);
+        todos[total].nome[31] = '\0';
+        todos[total].pontuacao = pontuacao;
+        total++;
     }
     fclose(f);
-    ranking_ordenar(r);
+
+    if (total == 0) {
+        free(todos);
+        return;
+    }
+
+    Recorde *aux = malloc(total * sizeof(Recorde));
+    if (!aux) {
+        free(todos);
+        return;
+    }
+    mergesort_recordes(0, (int)total - 1, todos, aux);
+    free(aux);
+
+    int limite = (total < RANKING_MAX) ? (int)total : RANKING_MAX;
+    for (int i = 0; i < limite; i++) {
+        r->entradas[i] = todos[i];
+    }
+    r->quantidade = limite;
+    free(todos);
 }
 
 Ranking *ranking_criar(void) {
@@ -54,9 +90,8 @@ int ranking_inserir(Ranking *r, const char *nome, int pontuacao) {
     return 1;
 }
 
-static void intercala(int inicio, int meio, int fim, Recorde v[]) {
+static void intercala(int inicio, int meio, int fim, Recorde v[], Recorde aux[]) {
     int inicio_v01 = inicio, inicio_v02 = meio + 1, poslivre = 0;
-    Recorde aux[RANKING_MAX];
 
     while (inicio_v01 <= meio && inicio_v02 <= fim) {
         if (v[inicio_v01].pontuacao >= v[inicio_v02].pontuacao)
@@ -72,18 +107,20 @@ static void intercala(int inicio, int meio, int fim, Recorde v[]) {
         v[inicio_v01] = aux[inicio_v01 - inicio];
 }
 
-static void mergesort_recordes(int inicio, int fim, Recorde v[]) {
+static void mergesort_recordes(int inicio, int fim, Recorde v[], Recorde aux[]) {
     if (inicio < fim) {
         int meio = (inicio + fim) / 2;
-        mergesort_recordes(inicio, meio, v);
-        mergesort_recordes(meio + 1, fim, v);
-        intercala(inicio, meio, fim, v);
+        mergesort_recordes(inicio, meio, v, aux);
+        mergesort_recordes(meio + 1, fim, v, aux);
+        intercala(inicio, meio, fim, v, aux);
     }
 }
 
 void ranking_ordenar(Ranking *r) {
-    if (r->quantidade > 1)
-        mergesort_recordes(0, r->quantidade - 1, r->entradas);
+    if (r->quantidade > 1) {
+        Recorde aux[RANKING_MAX];
+        mergesort_recordes(0, r->quantidade - 1, r->entradas, aux);
+    }
 }
 
 void ranking_exibir(const Ranking *r, Texture2D fundo) {
