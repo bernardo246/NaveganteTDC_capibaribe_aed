@@ -25,6 +25,26 @@ void hud_encerrar(void) {
     UnloadTexture(peixe_sprite);
 }
 
+void hud_desenhar_moedas(int quantidade) {
+    char texto[32];
+    snprintf(texto, sizeof(texto), "Moedas: %d", quantidade);
+    
+    int largura_texto = MeasureText(texto, 20);
+    int x = GetScreenWidth() - largura_texto - 20;
+    int y = 20;
+
+    DrawTexturePro(
+        moeda_sprite,
+        (Rectangle){0, 0, moeda_sprite.width, moeda_sprite.height},
+        (Rectangle){x - 40, y, 30, 30},
+        (Vector2){0, 0},
+        0.0f,
+        WHITE
+    );
+
+    DrawText(texto, x, y + 5, 20, WHITE);
+}
+
 void hud_desenhar(jogador *j) {
     int inicio_x = 20;
     int inicio_y = 720 - SLOT_TAMANHO - 50;
@@ -47,6 +67,8 @@ void hud_desenhar(jogador *j) {
             item = item->next;
         } while (item != j->inventario->primeiro);
     }
+
+    hud_desenhar_moedas(int quantidade);
 
     // desenha slots vazios
     for (int i = 0; i < total_slots; i++) {

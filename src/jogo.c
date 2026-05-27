@@ -400,8 +400,6 @@ void jogo_atualizar(void) {
 
         BeginDrawing();
 
-        hud_desenhar_moedas(moedas);
-
 
         DrawTexturePro(
             fundo_jogo,
@@ -589,10 +587,13 @@ void jogo_atualizar(void) {
         }
 
         hud_desenhar(&jogador_principal);
+        hud_desenhar_moedas(moedas_depois);
+
 
         if (clima_atual.tipo == CLIMA_CHUVA) {
             desenhar_chuva(&clima_atual);
         }
+
 
         atualizar_musica();
 
