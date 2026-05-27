@@ -33,6 +33,8 @@ static Texture2D fundo_jogo;
 
 static Texture2D escudo_sprite;
 static Texture2D pa_sprite;
+static Texture2D moeda_sprite;
+static Texture2D peixe_sprite;
 
 static Texture2D tronco_textures[9];
 static Texture2D garrafa_textures[9];
@@ -128,6 +130,8 @@ void jogo_iniciar(const char *nome_jogador) {
 
     escudo_sprite = LoadTexture("assets/sprites/itens/escudo.png");
     pa_sprite = LoadTexture("assets/sprites/itens/pa.png");
+    moeda_sprite = LoadTexture("assets/sprites/itens/moeda.png");
+    peixe_sprite = LoadTexture("assets/sprites/itens/peixe.png");
 
     for (int i = 0; i < 8; i++)
         jogador_textures[i] = LoadTexture(JOGADOR_SPRITE_PATHS[i]);
@@ -410,11 +414,10 @@ void jogo_atualizar(void) {
         while (item_atual != NULL) {
             Texture2D *tex_item = NULL;
 
-            if (item_atual->tipo == ITEM_ESCUDO) {
-                tex_item = &escudo_sprite;
-            } else if (item_atual->tipo == ITEM_PA) {
-                tex_item = &pa_sprite;
-            }
+            if (item_atual->tipo == ITEM_ESCUDO)      tex_item = &escudo_sprite;
+            else if (item_atual->tipo == ITEM_PA)     tex_item = &pa_sprite;
+            else if (item_atual->tipo == ITEM_MOEDA)  tex_item = &moeda_sprite;
+            else if (item_atual->tipo == ITEM_PEIXE)  tex_item = &peixe_sprite;
 
             if (tex_item != NULL) {
                 float tamanho_item = 60.0f;
@@ -471,6 +474,8 @@ void jogo_encerrar(void) {
     UnloadTexture(fundo_jogo);
     UnloadTexture(escudo_sprite);
     UnloadTexture(pa_sprite);
+    UnloadTexture(moeda_sprite);
+    UnloadTexture(peixe_sprite);
 
     for (int i = 0; i < 8; i++)
         UnloadTexture(jogador_textures[i]);

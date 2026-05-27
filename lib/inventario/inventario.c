@@ -37,6 +37,7 @@ Inventario* inventario_criar(int capacidade_itens_diferentes) {
         return NULL;
     }
 
+    inv->primeiro = NULL;
     inv->atual = NULL;
     inv->capacidade_itens_diferentes = capacidade_itens_diferentes;
     inv->quantidade_itens_diferentes = 0;
@@ -96,6 +97,7 @@ bool add_item(Inventario* inventario, TipoItem tipo_item, int quantidade) {
             novo_item->next = novo_item;
             novo_item->prev = novo_item;
             inventario->atual = novo_item;
+            inventario->primeiro = novo_item; // ← adiciona isso
         } else {
             // adiciona o novo item antes do item atual
             InventarioItem* ultimo = inventario->atual->prev;
@@ -135,6 +137,10 @@ bool remove_item(Inventario* inventario, TipoItem tipo_item, int quantidade) {
                 // se o item removido for o atual, move o ponteiro atual para o próximo item
                 if (inventario->atual == item_atual) {
                     inventario->atual = item_atual->next != item_atual ? item_atual->next : NULL; // se for o único item, define como NULL
+                }
+                // se o item removido for o primeiro, move o ponteiro primeiro para o próximo
+                if (inventario->primeiro == item_atual) {
+                    inventario->primeiro = item_atual->next != item_atual ? item_atual->next : NULL;
                 }
 
                 free(item_atual); // libera a memória do item removido
