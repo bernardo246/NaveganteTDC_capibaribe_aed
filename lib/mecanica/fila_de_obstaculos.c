@@ -203,28 +203,31 @@ void atualizar_obstaculos(Fila *obstaculos_ativos, jogador *jogador_atual) {
     }
 }
 
-// Margem de folga para cada lado da hitbox (sprites têm área transparente ao redor do visual)
-#define MARGEM_JOGADOR   24.0f
-#define MARGEM_OBSTACULO 14.0f
+// Fator de escala da hitbox em relação ao sprite (0.0 a 1.0).
+// Valores menores = hitbox menor = mais fácil de desviar.
+#define ESCALA_HITBOX_JOGADOR    0.50f
+#define ESCALA_HITBOX_OBSTACULO  0.60f
 
 // retorna 1 se houve colisão, 0 caso contrário. Se o jogador tiver o escudo ativo, ele absorve o impacto e não sofre dano, se ele tiver a pa ativa ele consegue remover o lixo do caminho, se ele tiver a pa ativa e colidir com um lixo no rio, ele é invencivel e não sofre dano, caso contrário, ele sofre dano normalmente
 int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
     tempo_invencivel(jogador);
 
+    float jw = jogador->hitbox.largura * ESCALA_HITBOX_JOGADOR;
+    float jh = jogador->hitbox.altura  * ESCALA_HITBOX_JOGADOR;
     Rectangle rJogador = {
-        jogador->pos.x + MARGEM_JOGADOR,
-        jogador->pos.y + MARGEM_JOGADOR,
-        jogador->hitbox.largura  - 2.0f * MARGEM_JOGADOR,
-        jogador->hitbox.altura   - 2.0f * MARGEM_JOGADOR
+        jogador->pos.x + (jogador->hitbox.largura - jw) / 2.0f,
+        jogador->pos.y + (jogador->hitbox.altura  - jh) / 2.0f,
+        jw,
+        jh
     };
 
-    float mw = obstaculo->hitbox.largura  - 2.0f * MARGEM_OBSTACULO;
-    float mh = obstaculo->hitbox.altura   - 2.0f * MARGEM_OBSTACULO;
+    float ow = obstaculo->hitbox.largura * ESCALA_HITBOX_OBSTACULO;
+    float oh = obstaculo->hitbox.altura  * ESCALA_HITBOX_OBSTACULO;
     Rectangle rObstaculo = {
-        obstaculo->pos.x - mw / 2.0f,
-        obstaculo->pos.y - mh / 2.0f,
-        mw,
-        mh
+        obstaculo->pos.x - ow / 2.0f,
+        obstaculo->pos.y - oh / 2.0f,
+        ow,
+        oh
     };
 
     // checando colisao e em caso de poderes especiais ativados:
@@ -239,10 +242,10 @@ int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
             jogador->poderes.escudo = false; // desativa o escudo
             jogador->invencivel=1;
             tempo_inicio_invencivel = GetTime();
-            return 1; 
+            return 1;
         }
 
-        
+
         if (!jogador->invencivel){
             jogador->vida -=40;
             jogador->invencivel=1;
@@ -250,6 +253,6 @@ int colisao_jogador_X_obstaculo(jogador *jogador,obstaculo *obstaculo){
             return 1;
         }
     }
-    
+
  return 0;
 }

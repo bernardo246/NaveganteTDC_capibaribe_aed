@@ -19,6 +19,6 @@ bool usar_item(jogador* player, TipoItem tipo_item);
  * @param player: ponteiro para o jogador
  * @param tipo_item: tipo do item cujo poder deve ser desativado
  */
-void desativar_poder(jogador* player, TipoItem tipo_item);
+void atualizar_poderes(jogador* player);
 
 #endif /* MECANICA_USO_ITENS_H */
