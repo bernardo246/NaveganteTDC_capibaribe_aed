@@ -25,5 +25,7 @@
 void jogo_iniciar(const char *nome_jogador);
 void jogo_atualizar(void);
 void jogo_encerrar(void);
+void jogo_incrementar_moeda(void);
+int  jogo_obter_moedas(void);
 
 #endif /* JOGO_H */
